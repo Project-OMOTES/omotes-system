@@ -12,6 +12,7 @@ CREATE TABLE job (
     job_name text NOT NULL,
     work_flow_type work_flow_type NOT NULL,
     user_name text,
+    project_name text,
     status job_status NOT NULL,
     input_config text,
     input_esdl text NOT NULL,
