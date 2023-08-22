@@ -30,7 +30,7 @@ services:
             - "./postgres_db/initdb.d/:/docker-entrypoint-initdb.d"
             - "db-data:/var/lib/postgresql/data/"
         ports:
-            - '5432:5432'
+            - "${POSTGRES_PORT:-5432}:5432"
         networks:
             - nwn
         environment:
@@ -50,7 +50,7 @@ services:
             POSTGRES_HOST: postgres_db
             POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
             POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-            POSTGRES_PORT: 5432
+            POSTGRES_PORT: "${POSTGRES_PORT:-5432}:5432"
             POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
             RABBITMQ_HOST: rabbitmq-nwn
             RABBITMQ_PORT: 5672
