@@ -38,3 +38,26 @@ services:
             POSTGRES_DB: ${POSTGRES_DATABASE_NAME}
             POSTGRES_USER: ${POSTGRES_ROOT_USER}
             POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+
+    optimization_worker:
+        image: tnoslafleur/nwn_optimization_worker:0.0.1
+        restart: unless-stopped
+        deploy:
+            replicas: 2
+        networks:
+            - nwn
+        environment:
+            POSTGRES_HOST: postgres_db
+            POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
+            POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+            POSTGRES_PORT: 5432
+            POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
+            RABBITMQ_HOST: rabbitmq-nwn
+            RABBITMQ_PORT: 5672
+            RABBITMQ_ROOT_USER: ${RABBITMQ_ROOT_USER}
+            RABBITMQ_ROOT_PASSWORD: ${RABBITMQ_ROOT_PASSWORD}
+            RABBITMQ_HIPE_COMPILE: ${RABBITMQ_HIPE_COMPILE}
+            RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+        depends_on:
+            - postgres_db
+            - rabbitmq
