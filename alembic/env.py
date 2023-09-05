@@ -31,8 +31,7 @@ target_metadata = [Base.metadata]
 # ... etc.
 
 from dotenv import load_dotenv
-
-load_dotenv(dotenv_path=f".env.{config.get_main_option('env')}")
+load_dotenv()
 
 
 def run_migrations_offline() -> None:

@@ -1,12 +1,11 @@
 # Computation Engine - NWN
-Setup the required infrastructure and database migrations
+Setup the required infrastructure and database migrations:
 
-First copy `.env-template` to `.env.dev` and `.env.prod` and fill with the appropriate values.
+Copy `.env-template` to `.env` and fill with the appropriate values.
 
 ## Setup infrastructure
 ```
-docker-compose --env-file .env.dev up
-docker-compose --env-file .env.prod up
+docker-compose up
 ```
 
 ## Database migrations
@@ -22,9 +21,13 @@ pip install -e <rel path to root nwnsdk code directory>
 ```
 
 ### Update database
-Apply migration(s) to reach the latest revision (for production database replace `dev` with `prod`):
+Apply migration(s) to reach the latest revision locally:
 ```
-alembic --name dev upgrade head
+alembic upgrade head
+```
+or via:
+```
+docker-compose up --build postgres_db_upgrade
 ```
 
 ### Create revision
@@ -33,5 +36,5 @@ Create database revision (version) from updated nwnsdk sqlalchemy database model
 - The database is not automatically upgraded, to do so see above
 - Always check the created version `.py` file in the `alembic\versions` directory
 ```
-alembic --name dev revision --autogenerate -m "revision message"
+alembic revision --autogenerate -m "revision message"
 ```
