@@ -89,3 +89,29 @@ services:
                 condition: service_healthy
             rabbitmq:
                 condition: service_healthy
+
+    mapeditor-nwn-dispatcher:
+        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.1
+        ports:
+            - "9200:9200"
+        networks:
+            - nwn
+        environment:
+            NWN_POSTGRES_HOST: postgres_db
+            NWN_POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
+            NWN_POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+            NWN_POSTGRES_PORT: 5432
+            NWN_POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
+            NWN_RABBITMQ_HOST: rabbitmq-nwn
+            NWN_RABBITMQ_PORT: 5672
+            NWN_RABBITMQ_ROOT_USER: ${RABBITMQ_ROOT_USER}
+            NWN_RABBITMQ_ROOT_PASSWORD: ${RABBITMQ_ROOT_PASSWORD}
+            NWN_RABBITMQ_HIPE_COMPILE: ${RABBITMQ_HIPE_COMPILE}
+            NWN_RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+        depends_on:
+            postgres_db:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        profiles:
+            - mapeditor-dispatcher
