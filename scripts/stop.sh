@@ -1,3 +1,4 @@
 #!/bin/bash
+. scripts/_select_docker_compose.sh
 
-docker-compose down
+DOCKER_COMPOSE down

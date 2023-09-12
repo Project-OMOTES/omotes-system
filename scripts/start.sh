@@ -1,3 +1,5 @@
 #!/bin/bash
 
-docker-compose up -d
+. scripts/_select_docker_compose.sh
+
+DOCKER_COMPOSE up -d

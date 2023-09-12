@@ -1,7 +1,7 @@
 #!/bin/bash
-
-docker-compose down
-docker-compose up -d postgres_db
-docker-compose build postgres_db_upgrade
-docker-compose run postgres_db_upgrade
-docker-compose down
+. scripts/_select_docker_compose.sh
+DOCKER_COMPOSE down
+DOCKER_COMPOSE up -d postgres_db
+DOCKER_COMPOSE build postgres_db_upgrade
+DOCKER_COMPOSE run postgres_db_upgrade
+DOCKER_COMPOSE down
