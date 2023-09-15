@@ -92,6 +92,7 @@ services:
 
     mapeditor-nwn-dispatcher:
         image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.3
+#        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.3-uwsgi
         ports:
             - "9200:9200"
         networks:
