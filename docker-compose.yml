@@ -91,7 +91,7 @@ services:
                 condition: service_healthy
 
     mapeditor-nwn-dispatcher:
-        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.3-post1
+        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.4
         ports:
             - "9200:9200"
         networks:
