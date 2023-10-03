@@ -66,7 +66,7 @@ services:
             - postgres-upgrade
 
     optimization_worker:
-        image: tnoslafleur/nwn_optimization_worker:0.0.9
+        image: tnoslafleur/omotes-optimizer-worker:0.0.10
         restart: unless-stopped
         deploy:
             replicas: 2
