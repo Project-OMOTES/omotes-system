@@ -13,6 +13,7 @@ services:
         restart: unless-stopped
         volumes:
             - "broker-data:/var/lib/rabbitmq/"
+            - "./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf"
         environment:
             - RABBITMQ_DEFAULT_USER=${RABBITMQ_ROOT_USER}
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_ROOT_PASSWORD}
