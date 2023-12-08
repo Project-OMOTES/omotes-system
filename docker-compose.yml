@@ -6,6 +6,7 @@ networks:
 volumes:
   db-data:
   broker-data:
+  influxdb_storage:
 
 services:
     rabbitmq:
@@ -49,6 +50,28 @@ services:
             timeout: 5s
             retries: 10
 
+    omotes_influxdb:
+        image: influxdb:1.7
+        ports:
+            - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
+            - "${INFLUXDB_RPC_PORT}:${INFLUXDB_RPC_PORT}"
+        networks:
+            - nwn
+        environment:
+            - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
+            - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
+            - INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT}
+            - INFLUXDB_BIND_ADDRESS=:${INFLUXDB_RPC_PORT}
+            - INFLUXDB_DB=omotes_timeseries
+            - INFLUXDB_WRITE_USER=${INFLUXDB_WRITE_USER}
+            - INFLUXDB_WRITE_USER_PASSWORD=${INFLUXDB_WRITE_USER_PASSWORD}
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://omotes_influxdb:${INFLUXDB_PORT}/ping" ]
+            interval: 10s
+            timeout: 5s
+        volumes:
+            - influxdb_storage:/var/lib/influxdb
+
     # Skipped in 'docker-compose up', only used in 'postgres_upgrade.sh'
     postgres_db_upgrade:
         build: ./
@@ -67,13 +90,17 @@ services:
             - postgres-upgrade
 
     optimization_worker:
-        image: tnoslafleur/omotes-optimizer-worker:0.0.12
+        image: ghcr.io/project-omotes/optimizer-worker:0.0.14
         restart: unless-stopped
         deploy:
             replicas: 2
         networks:
             - nwn
         environment:
+            INFLUXDB_HOST: omotes_influxdb
+            INFLUXDB_PORT: ${INFLUXDB_PORT}
+            INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
+            INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
             POSTGRES_HOST: postgres_db
             POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
             POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
