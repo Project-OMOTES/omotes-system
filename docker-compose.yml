@@ -90,7 +90,7 @@ services:
             - postgres-upgrade
 
     optimization_worker:
-        image: ghcr.io/project-omotes/optimizer-worker:0.0.14
+        image: ghcr.io/project-omotes/optimizer-worker:0.0.16
         restart: unless-stopped
         deploy:
             replicas: 2
