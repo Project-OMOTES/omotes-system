@@ -30,26 +30,6 @@ services:
             timeout: 5s
             retries: 10
 
-    postgres_db:
-        image: postgres:15.4
-        restart: unless-stopped
-        volumes:
-            - "db-data:/var/lib/postgresql/data/"
-        ports:
-            - "${POSTGRES_PORT:-5432}:5432"
-        networks:
-            - nwn
-        environment:
-            PGDATA: /var/lib/postgresql/data
-            POSTGRES_DB: ${POSTGRES_DATABASE_NAME}
-            POSTGRES_USER: ${POSTGRES_ROOT_USER}
-            POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-        healthcheck:
-            test: ["CMD", "pg_isready", "-U", "${POSTGRES_ROOT_USER}", "-d", "${POSTGRES_DATABASE_NAME}"]
-            interval: 5s
-            timeout: 5s
-            retries: 10
-
     omotes_influxdb:
         image: influxdb:1.7
         ports:
@@ -72,74 +52,105 @@ services:
         volumes:
             - influxdb_storage:/var/lib/influxdb
 
-    # Skipped in 'docker-compose up', only used in 'postgres_upgrade.sh'
-    postgres_db_upgrade:
-        build: ./
+    orchestrator:
+        image: ghcr.io/project-omotes/omotes_orchestrator:0.0.2
+        restart: unless-stopped
         networks:
             - nwn
         environment:
-            POSTGRES_HOST: postgres_db
-            POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
-            POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-            POSTGRES_PORT: 5432
-            POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
-        depends_on:
-            postgres_db:
-                condition: service_healthy
-        profiles:
-            - postgres-upgrade
+            CELERY_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
+            CELERY_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+            CELERY_RABBITMQ_HOSTNAME: rabbitmq-nwn
+            CELERY_RABBITMQ_PORT: 5672
+            CELERY_RABBITMQ_VIRTUALHOST: omotes_celery
 
-    optimization_worker:
-        image: ghcr.io/project-omotes/optimizer-worker:0.0.16
+            SDK_RABBITMQ_USERNAME: ${RABBITMQ_OMOTES_USER_NAME}
+            SDK_RABBITMQ_PASSWORD: ${RABBITMQ_OMOTES_USER_PASSWORD}
+            SDK_RABBITMQ_HOSTNAME: rabbitmq-nwn
+            SDK_RABBITMQ_PORT: 5672
+            SDK_RABBITMQ_VIRTUALHOST: omotes
+
+            TASK_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
+            TASK_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+            TASK_RABBITMQ_HOSTNAME: rabbitmq-nwn
+            TASK_RABBITMQ_PORT: 5672
+            TASK_RABBITMQ_VIRTUALHOST: omotes_celery
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+
+    grow_worker_optimizer:
+        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.1
         restart: unless-stopped
         deploy:
             replicas: 2
         networks:
             - nwn
         environment:
-            INFLUXDB_HOST: omotes_influxdb
+            INFLUXDB_HOSTNAME: omotes_influxdb
             INFLUXDB_PORT: ${INFLUXDB_PORT}
             INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
             INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
-            POSTGRES_HOST: postgres_db
-            POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
-            POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-            POSTGRES_PORT: 5432
-            POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
-            RABBITMQ_HOST: rabbitmq-nwn
+
+            RABBITMQ_HOSTNAME: rabbitmq-nwn
             RABBITMQ_PORT: 5672
-            RABBITMQ_ROOT_USER: ${RABBITMQ_ROOT_USER}
-            RABBITMQ_ROOT_PASSWORD: ${RABBITMQ_ROOT_PASSWORD}
-            RABBITMQ_HIPE_COMPILE: ${RABBITMQ_HIPE_COMPILE}
-            RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+            RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
+            RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+            RABBITMQ_VIRTUALHOST: omotes_celery
+
+            GROW_TASK_TYPE: grow_optimizer
+            LOG_LEVEL: INFO
         depends_on:
-            postgres_db:
-                condition: service_healthy
             rabbitmq:
                 condition: service_healthy
 
-    mapeditor-nwn-dispatcher:
-        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.7
-        ports:
-            - "9200:9200"
+    grow_worker_simulator:
+        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.1
+        restart: unless-stopped
+        deploy:
+            replicas: 2
         networks:
             - nwn
         environment:
-            NWN_POSTGRES_HOST: postgres_db
-            NWN_POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
-            NWN_POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-            NWN_POSTGRES_PORT: 5432
-            NWN_POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
-            NWN_RABBITMQ_HOST: rabbitmq-nwn
-            NWN_RABBITMQ_PORT: 5672
-            NWN_RABBITMQ_ROOT_USER: ${RABBITMQ_ROOT_USER}
-            NWN_RABBITMQ_ROOT_PASSWORD: ${RABBITMQ_ROOT_PASSWORD}
-            NWN_RABBITMQ_HIPE_COMPILE: ${RABBITMQ_HIPE_COMPILE}
-            NWN_RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+            INFLUXDB_HOSTNAME: omotes_influxdb
+            INFLUXDB_PORT: ${INFLUXDB_PORT}
+            INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
+            INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
+
+            RABBITMQ_HOSTNAME: rabbitmq-nwn
+            RABBITMQ_PORT: 5672
+            RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
+            RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+            RABBITMQ_VIRTUALHOST: omotes_celery
+
+            GROW_TASK_TYPE: grow_simulator
+            LOG_LEVEL: INFO
         depends_on:
-            postgres_db:
-                condition: service_healthy
             rabbitmq:
                 condition: service_healthy
-        profiles:
-            - mapeditor-dispatcher
+
+#    mapeditor-nwn-dispatcher:
+#        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.7
+#        ports:
+#            - "9200:9200"
+#        networks:
+#            - nwn
+#        environment:
+#            NWN_POSTGRES_HOST: postgres_db
+#            NWN_POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
+#            NWN_POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+#            NWN_POSTGRES_PORT: 5432
+#            NWN_POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
+#            NWN_RABBITMQ_HOST: rabbitmq-nwn
+#            NWN_RABBITMQ_PORT: 5672
+#            NWN_RABBITMQ_ROOT_USER: ${RABBITMQ_ROOT_USER}
+#            NWN_RABBITMQ_ROOT_PASSWORD: ${RABBITMQ_ROOT_PASSWORD}
+#            NWN_RABBITMQ_HIPE_COMPILE: ${RABBITMQ_HIPE_COMPILE}
+#            NWN_RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE}
+#        depends_on:
+#            postgres_db:
+#                condition: service_healthy
+#            rabbitmq:
+#                condition: service_healthy
+#        profiles:
+#            - mapeditor-dispatcher
