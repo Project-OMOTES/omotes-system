@@ -50,6 +50,7 @@ try:
         callback_on_finished=handle_on_finished,
         callback_on_progress_update=handle_on_progress_update,
         callback_on_status_update=handle_on_status_update,
+        auto_disconnect_on_result=True
     )
     time.sleep(60)
 finally:
