@@ -53,7 +53,7 @@ services:
             - influxdb_storage:/var/lib/influxdb
 
     orchestrator:
-        image: ghcr.io/project-omotes/omotes_orchestrator:0.0.4
+        image: ghcr.io/project-omotes/omotes_orchestrator:0.0.5
         restart: unless-stopped
         networks:
             - nwn
@@ -79,14 +79,14 @@ services:
             rabbitmq:
                 condition: service_healthy
 
-    grow_worker_optimizer:
-        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.3
+    grow_worker_optimizer: &grow_worker
+        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.4
         restart: unless-stopped
         deploy:
             replicas: 2
         networks:
             - nwn
-        environment:
+        environment: &grow_worker_env
             INFLUXDB_HOSTNAME: omotes_influxdb
             INFLUXDB_PORT: ${INFLUXDB_PORT}
             INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
@@ -105,29 +105,22 @@ services:
                 condition: service_healthy
 
     grow_worker_simulator:
-        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.3
-        restart: unless-stopped
-        deploy:
-            replicas: 2
-        networks:
-            - nwn
+        <<: *grow_worker
         environment:
-            INFLUXDB_HOSTNAME: omotes_influxdb
-            INFLUXDB_PORT: ${INFLUXDB_PORT}
-            INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
-            INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
-
-            RABBITMQ_HOSTNAME: rabbitmq-nwn
-            RABBITMQ_PORT: 5672
-            RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
-            RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
-            RABBITMQ_VIRTUALHOST: omotes_celery
-
+            <<: *grow_worker_env
             GROW_TASK_TYPE: grow_simulator
-            LOG_LEVEL: INFO
-        depends_on:
-            rabbitmq:
-                condition: service_healthy
+
+    grow_worker_optimizer_no_heat_losses:
+        <<: *grow_worker
+        environment:
+            <<: *grow_worker_env
+            GROW_TASK_TYPE: grow_optimizer_no_heat_losses
+
+    grow_worker_optimizer_no_heat_losses_discounted_capex:
+        <<: *grow_worker
+        environment:
+            <<: *grow_worker_env
+            GROW_TASK_TYPE: grow_optimizer_no_heat_losses_discounted_capex
 
 #    mapeditor-nwn-dispatcher:
 #        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.7
