@@ -2,4 +2,4 @@
 
 . scripts/_select_docker_compose.sh
 
-$DOCKER_COMPOSE up -d
+$DOCKER_COMPOSE --profile mapeditor-dispatcher up -d
