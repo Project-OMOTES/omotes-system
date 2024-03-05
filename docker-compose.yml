@@ -1,7 +1,7 @@
 version: "3.8"
 
 networks:
-    nwn:
+    omotes:
 
 volumes:
   db-data:
@@ -23,9 +23,9 @@ services:
             - '5672:5672'
             - '15672:15672'
         networks:
-            - nwn
+            - omotes
         healthcheck:
-            test: rabbitmq-diagnostics -q ping
+            test: rabbitmq-diagnostics -q listeners --node rabbit@rabbitmq-nwn
             interval: 10s
             timeout: 5s
             retries: 10
@@ -36,7 +36,7 @@ services:
             - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
             - "${INFLUXDB_RPC_PORT}:${INFLUXDB_RPC_PORT}"
         networks:
-            - nwn
+            - omotes
         environment:
             - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
             - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
@@ -52,11 +52,53 @@ services:
         volumes:
             - influxdb_storage:/var/lib/influxdb
 
+    orchestrator_postgres_db: &orchestrator_postgres_db
+        image: postgres:15.4
+        restart: unless-stopped
+        volumes:
+            - "db-data:/var/lib/postgresql/data/"
+        networks:
+            - omotes
+        environment:
+            PGDATA: /var/lib/postgresql/data
+            POSTGRES_DB: omotes_jobs
+            POSTGRES_USER: ${POSTGRES_ROOT_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "${POSTGRES_ROOT_USER}", "-d", "omotes_jobs"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    # Skipper in 'docker-compose up', only used to develop database revisions.
+    orchestrator_postgres_db_dev:
+        <<: *orchestrator_postgres_db
+        ports:
+            - "${POSTGRES_DEV_PORT}:5432"
+        profiles:
+            - manual_dev
+
+    # Skipped in 'docker-compose up', only used in 'setup.sh'
+    orchestrator_postgres_db_upgrade:
+        build: ./orchestrator_postgres_db_upgrade
+        networks:
+            - omotes
+        environment:
+            POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
+            POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+            POSTGRES_HOST: orchestrator_postgres_db
+            POSTGRES_PORT: 5432
+        depends_on:
+            orchestrator_postgres_db:
+                condition: service_healthy
+        profiles:
+            - manual_setup
+
     orchestrator:
         image: ghcr.io/project-omotes/omotes_orchestrator:0.0.6
         restart: unless-stopped
         networks:
-            - nwn
+            - omotes
         environment:
             CELERY_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
             CELERY_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
@@ -85,7 +127,7 @@ services:
         deploy:
             replicas: 2
         networks:
-            - nwn
+            - omotes
         environment: &grow_worker_env
             INFLUXDB_HOSTNAME: omotes_influxdb
             INFLUXDB_PORT: ${INFLUXDB_PORT}
@@ -127,7 +169,7 @@ services:
 #        ports:
 #            - "9200:9200"
 #        networks:
-#            - nwn
+#            - omotes
 #        environment:
 #            NWN_POSTGRES_HOST: postgres_db
 #            NWN_POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
