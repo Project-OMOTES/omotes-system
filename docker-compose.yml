@@ -53,7 +53,7 @@ services:
             - influxdb_storage:/var/lib/influxdb
 
     orchestrator:
-        image: ghcr.io/project-omotes/omotes_orchestrator:0.0.5
+        image: ghcr.io/project-omotes/omotes_orchestrator:0.0.6
         restart: unless-stopped
         networks:
             - nwn
@@ -80,7 +80,7 @@ services:
                 condition: service_healthy
 
     grow_worker_optimizer: &grow_worker
-        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.4
+        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.5
         restart: unless-stopped
         deploy:
             replicas: 2
