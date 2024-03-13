@@ -17,7 +17,7 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-job_status = sa.Enum("SUBMITTED", "RUNNING", name="jobstatus")
+job_status = sa.Enum("REGISTERED", "SUBMITTED", "RUNNING", name="jobstatus")
 
 
 def upgrade() -> None:
@@ -25,11 +25,12 @@ def upgrade() -> None:
         "job",
         sa.Column("job_id", sa.UUID(), nullable=False),
         sa.Column("celery_id", sa.String(), nullable=True),
+        sa.Column("workflow_type", sa.String(), nullable=False),
         sa.Column("status", job_status, nullable=False),
         sa.Column("registered_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("submitted_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("running_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("timeout_after_ms", sa.Integer(), nullable=True),
-        sa.Column("is_cancelled", sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint("job_id"),
     )
 

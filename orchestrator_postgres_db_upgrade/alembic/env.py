@@ -74,7 +74,7 @@ def run_migrations_online() -> None:
         username=os.getenv("POSTGRES_ROOT_USER"),
         password=os.getenv("POSTGRES_ROOT_PASSWORD"),
         host=os.getenv("POSTGRES_HOST", "localhost"),
-        port=int(os.getenv("POSTGRES_PORT", "5432")),
+        port=int(os.getenv("POSTGRES_DEV_PORT", "5432")),
         database="omotes_jobs",
     )
 

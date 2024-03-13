@@ -24,7 +24,7 @@ def handle_on_finished(job: Job, result: JobResult):
 
 def handle_on_status_update(job: Job, status_update: JobStatusUpdate):
     print(
-        f"Job {job.id} progress (type: {job.workflow_type.workflow_type_name}). "
+        f"Job {job.id} status update (type: {job.workflow_type.workflow_type_name}). "
         f"Status: {status_update.status}"
     )
 
@@ -52,8 +52,8 @@ try:
         callback_on_status_update=handle_on_status_update,
         auto_disconnect_on_result=True,
     )
-    time.sleep(4)
+    time.sleep(2)
     omotes_if.cancel_job(job)
-    time.sleep(56)
+    time.sleep(58)
 finally:
     omotes_if.stop()
