@@ -1,1 +1,1 @@
-omotes_sdk_python==0.0.11
+omotes_sdk_python==0.0.12
