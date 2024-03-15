@@ -1,14 +1,11 @@
+import importlib.util
 import os
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
 
 from alembic import context
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-
-from nwnsdk.postgres.dbmodels import Base
+from dotenv import load_dotenv
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,15 +20,22 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [Base.metadata]
+
+if importlib.util.find_spec("omotes_orchestrator") is not None:
+    print("Setting omotes_orchestrator db models for autogeneration")
+    from omotes_orchestrator.db_models.job import Base
+
+    target_metadata = [Base.metadata]
+else:
+    target_metadata = []
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-from dotenv import load_dotenv
-load_dotenv()
+
+load_dotenv(dotenv_path="../.env")
 
 
 def run_migrations_offline() -> None:
@@ -65,19 +69,13 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    # connectable = engine_from_config(
-    #     config.get_section(config.config_ini_section, {}),
-    #     prefix="sqlalchemy.",
-    #     poolclass=pool.NullPool,
-    # )
-
     url = URL.create(
         "postgresql+psycopg2",
         username=os.getenv("POSTGRES_ROOT_USER"),
         password=os.getenv("POSTGRES_ROOT_PASSWORD"),
-        host=os.getenv("POSTGRES_HOST"),
-        port=os.getenv("POSTGRES_PORT"),
-        database=os.getenv("POSTGRES_DATABASE_NAME"),
+        host=os.getenv("POSTGRES_HOST", "localhost"),
+        port=int(os.getenv("POSTGRES_DEV_PORT", "5432")),
+        database="omotes_jobs",
     )
 
     connectable = create_engine(
@@ -86,15 +84,13 @@ def run_migrations_online() -> None:
         max_overflow=5,
         echo=True,
         connect_args={
-            "application_name": "nwn",
+            "application_name": "omotes_orchestrator_db_upgrade_dev",
             "options": "-c lock_timeout=30000 -c statement_timeout=300000",  # 5 minutes
         },
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

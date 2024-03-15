@@ -42,7 +42,7 @@ try:
     omotes_if.start()
 
     omotes_if.connect_to_submitted_job(
-        job=Job(id=UUID("3d91498d-4d0d-4f2b-aae0-87534775dc73"), workflow_type=WorkflowType("grow_simulator", "some descr")),
+        job=Job(id=UUID("81b1fec2-60b0-468a-804f-fc06c533fbb2"), workflow_type=WorkflowType("grow_simulator", "some descr")),
         callback_on_finished=handle_on_finished,
         callback_on_progress_update=handle_on_progress_update,
         callback_on_status_update=handle_on_status_update,
