@@ -6,7 +6,7 @@ The infrastructure consists of the following components:
 
 ## Setup infrastructure
 Copy `.env-template` to `.env` and fill with the appropriate values.  
-To setup the infrastructure components:
+To setup the infrastructure components (for windows run in `Git Bash`):
 ```
 ./scripts/setup.sh
 ```

@@ -29,8 +29,15 @@ $DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes root ".
 $DOCKER_COMPOSE exec rabbitmq rabbitmqctl add_vhost omotes_celery
 $DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes_celery root ".*" ".*" ".*"
 
-$DOCKER_COMPOSE exec rabbitmq rabbitmqctl add_user --vhost omotes ${RABBITMQ_OMOTES_USER_NAME} ${RABBITMQ_OMOTES_USER_PASSWORD}
-$DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes ${RABBITMQ_OMOTES_USER_NAME} ".*" ".*" ".*"
-$DOCKER_COMPOSE exec rabbitmq rabbitmqctl add_user --vhost omotes_celery ${RABBITMQ_CELERY_USER_NAME} ${RABBITMQ_CELERY_USER_PASSWORD}
-$DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes_celery ${RABBITMQ_CELERY_USER_NAME} ".*" ".*" ".*"
+$DOCKER_COMPOSE exec rabbitmq rabbitmqctl add_user --vhost omotes "${RABBITMQ_OMOTES_USER_NAME}" "${RABBITMQ_OMOTES_USER_PASSWORD}"
+$DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes "${RABBITMQ_OMOTES_USER_NAME}" ".*" ".*" ".*"
+$DOCKER_COMPOSE exec rabbitmq rabbitmqctl add_user --vhost omotes_celery "${RABBITMQ_CELERY_USER_NAME}" "${RABBITMQ_CELERY_USER_PASSWORD}"
+$DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes_celery "${RABBITMQ_CELERY_USER_NAME}" ".*" ".*" ".*"
 
+# Add influxdb users with write access for optimizer/simulator and with admin rights for the frontend (root admin user via env vars)
+$DOCKER_COMPOSE up -d --wait omotes_influxdb
+$DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "CREATE USER ${INFLUXDB_WRITE_USER} WITH PASSWORD '${INFLUXDB_WRITE_USER_PASSWORD}'"
+$DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "GRANT WRITE ON omotes_timeseries TO ${INFLUXDB_WRITE_USER}"
+echo "Influxdb user '${INFLUXDB_WRITE_USER}' created."
+$DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "CREATE USER ${INFLUXDB_FRONTEND_ADMIN_USER} WITH PASSWORD '${INFLUXDB_FRONTEND_ADMIN_USER_PASSWORD}' WITH ALL PRIVILEGES"
+echo "Influxdb user '${INFLUXDB_FRONTEND_ADMIN_USER}' created."
