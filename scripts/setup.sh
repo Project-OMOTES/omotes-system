@@ -38,6 +38,8 @@ $DOCKER_COMPOSE exec rabbitmq rabbitmqctl set_permissions --vhost omotes_celery 
 $DOCKER_COMPOSE up -d --wait omotes_influxdb
 $DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "CREATE USER ${INFLUXDB_WRITE_USER} WITH PASSWORD '${INFLUXDB_WRITE_USER_PASSWORD}'"
 $DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "GRANT WRITE ON omotes_timeseries TO ${INFLUXDB_WRITE_USER}"
-echo "Influxdb user '${INFLUXDB_WRITE_USER}' created."
+$DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "SET PASSWORD FOR ${INFLUXDB_WRITE_USER} = '${INFLUXDB_WRITE_USER_PASSWORD}'"
+echo "Influxdb user '${INFLUXDB_WRITE_USER}' created/updated."
 $DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "CREATE USER ${INFLUXDB_FRONTEND_ADMIN_USER} WITH PASSWORD '${INFLUXDB_FRONTEND_ADMIN_USER_PASSWORD}' WITH ALL PRIVILEGES"
-echo "Influxdb user '${INFLUXDB_FRONTEND_ADMIN_USER}' created."
+$DOCKER_COMPOSE exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute "SET PASSWORD FOR ${INFLUXDB_FRONTEND_ADMIN_USER} = '${INFLUXDB_FRONTEND_ADMIN_USER_PASSWORD}'"
+echo "Influxdb user '${INFLUXDB_FRONTEND_ADMIN_USER}' created/updated."
