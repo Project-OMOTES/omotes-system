@@ -3,10 +3,12 @@ version: "3.8"
 networks:
     omotes:
 
+
 volumes:
-  db-data:
-  broker-data:
-  influxdb_storage:
+    db-data:
+    broker-data:
+    influxdb_storage:
+
 
 services:
     rabbitmq:
@@ -46,7 +48,13 @@ services:
             - INFLUXDB_WRITE_USER=${INFLUXDB_WRITE_USER}
             - INFLUXDB_WRITE_USER_PASSWORD=${INFLUXDB_WRITE_USER_PASSWORD}
         healthcheck:
-            test: [ "CMD", "curl", "-f", "http://omotes_influxdb:${INFLUXDB_PORT}/ping" ]
+            test:
+                [
+                    "CMD",
+                    "curl",
+                    "-f",
+                    "http://omotes_influxdb:${INFLUXDB_PORT}/ping"
+                ]
             interval: 10s
             timeout: 5s
         volumes:
@@ -128,49 +136,73 @@ services:
                 condition: service_healthy
             orchestrator_postgres_db:
                 condition: service_healthy
-
-    grow_worker_optimizer: &grow_worker
-        image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.7
+    
+    
+    simulator_worker:
+        image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.4
         restart: unless-stopped
         deploy:
-            replicas: 2
+            replicas: 1
         networks:
             - omotes
-        environment: &grow_worker_env
+        environment:
             INFLUXDB_HOSTNAME: omotes_influxdb
             INFLUXDB_PORT: ${INFLUXDB_PORT}
             INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
             INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
-
-            RABBITMQ_HOSTNAME: rabbitmq-nwn
-            RABBITMQ_PORT: 5672
             RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
             RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+            RABBITMQ_HOSTNAME: rabbitmq-nwn
+            RABBITMQ_PORT: 5672
             RABBITMQ_VIRTUALHOST: omotes_celery
-
-            GROW_TASK_TYPE: grow_optimizer
             LOG_LEVEL: INFO
         depends_on:
             rabbitmq:
                 condition: service_healthy
 
-    grow_worker_simulator:
-        <<: *grow_worker
-        environment:
-            <<: *grow_worker_env
-            GROW_TASK_TYPE: grow_simulator
 
-    grow_worker_optimizer_no_heat_losses:
-        <<: *grow_worker
-        environment:
-            <<: *grow_worker_env
-            GROW_TASK_TYPE: grow_optimizer_no_heat_losses
+    # grow_worker_optimizer: &grow_worker
+    #     image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.7
+    #     restart: unless-stopped
+    #     deploy:
+    #         replicas: 2
+    #     networks:
+    #         - omotes
+    #     environment: &grow_worker_env
+    #         INFLUXDB_HOSTNAME: omotes_influxdb
+    #         INFLUXDB_PORT: ${INFLUXDB_PORT}
+    #         INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
+    #         INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
 
-    grow_worker_optimizer_no_heat_losses_discounted_capex:
-        <<: *grow_worker
-        environment:
-            <<: *grow_worker_env
-            GROW_TASK_TYPE: grow_optimizer_no_heat_losses_discounted_capex
+    #         GROW_TASK_TYPE: grow_optimizer
+    #         LOG_LEVEL: INFO
+    #     depends_on:
+    #         rabbitmq:
+    #             condition: service_healthy
+
+    # grow_worker_simulator:
+    #     <<: *grow_worker
+    #     environment:
+    #         <<: *grow_worker_env
+    #         GROW_TASK_TYPE: grow_simulator
+
+    # grow_worker_optimizer_no_heat_losses:
+    #     <<: *grow_worker
+    #     environment:
+    #         <<: *grow_worker_env
+    #         GROW_TASK_TYPE: grow_optimizer_no_heat_losses
+
+    # grow_worker_optimizer_no_heat_losses_discounted_capex:
+    #     <<: *grow_worker
+    #     environment:
+    #         <<: *grow_worker_env
+    #         GROW_TASK_TYPE: grow_optimizer_no_heat_losses_discounted_capex
+
+    # grow_worker_optimizer_no_heat_losses_discounted_capex:
+    #     <<: *grow_worker
+    #     environment:
+    #         <<: *grow_worker_env
+    #         GROW_TASK_TYPE: grow_optimizer_no_heat_losses_discounted_capex
 
 #    mapeditor-nwn-dispatcher:
 #        image: mvrijlandt/mapeditor_nwn_dispatcher:0.0.7
