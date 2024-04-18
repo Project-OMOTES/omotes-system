@@ -1,5 +1,6 @@
 import base64
 import time
+import datetime
 
 from omotes_sdk.config import RabbitMQConfig
 from omotes_sdk.omotes_interface import (
@@ -49,7 +50,11 @@ try:
 
     omotes_if.submit_job(
         esdl=base64.b64decode(input_esdl).decode(),
-        params_dict={"key1": "value1", "key2": ["just", "a", "list", "with", "an", "integer", 3]},
+        params_dict={
+            "timestep_s": 3600,
+            "start_time_unix_s": datetime.datetime(2019, 1, 2, 0, 0, 0).timestamp(),
+            "end_time_unix_s": datetime.datetime(2019, 1, 2, 3, 0, 0).timestamp(),
+        },
         workflow_type=workflow_simulator,
         job_timeout=None,
         callback_on_finished=handle_on_finished,
