@@ -178,7 +178,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_no_heat_losses_discounted_capex
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.4
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.5
     restart: unless-stopped
     deploy:
       replicas: 2
