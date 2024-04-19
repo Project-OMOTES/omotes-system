@@ -19,6 +19,17 @@ To stop the components:
 ./scripts/stop.sh
 ```
 
+## Update infrastructure
+In order to update the infrastructure, you first stop the current system, setup the new system
+and start it. Docker and other tooling will ensure only updated infrastructure components will be
+replaced.
+
+```bash
+./scripts/stop.sh
+./scripts/setup.sh
+./scripts/start.sh
+```
+
 ## Quickstart example
 Once the infrastructure is up and running, an example job may be run to check if the infrastructure
 is behaving as expected. The example may be found in `example_sdk_client/`. To run it:

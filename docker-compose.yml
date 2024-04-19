@@ -100,7 +100,7 @@ services:
       - manual_setup
 
   orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:0.0.9
+    image: ghcr.io/project-omotes/omotes_orchestrator:0.0.10
     restart: unless-stopped
     networks:
       - omotes
@@ -135,7 +135,7 @@ services:
         condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
-    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.8
+    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.9
     restart: unless-stopped
     deploy:
       replicas: 2
@@ -153,7 +153,7 @@ services:
       RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
       RABBITMQ_VIRTUALHOST: omotes_celery
 
-      GROW_TASK_TYPE: grow_optimizer
+      GROW_TASK_TYPE: grow_optimizer_default
       LOG_LEVEL: INFO
     depends_on:
       rabbitmq:
@@ -171,11 +171,11 @@ services:
       <<: *grow_worker_env
       GROW_TASK_TYPE: grow_optimizer_no_heat_losses
 
-  grow_worker_optimizer_no_heat_losses_discounted_capex:
+  grow_worker_optimizer_with_pressure:
     <<: *grow_worker
     environment:
       <<: *grow_worker_env
-      GROW_TASK_TYPE: grow_optimizer_no_heat_losses_discounted_capex
+      GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
     image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.6
