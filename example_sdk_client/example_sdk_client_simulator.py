@@ -22,6 +22,8 @@ def handle_on_finished(job: Job, result: JobResult):
         f"logs length: {len(result.logs)}"
     )
 
+    print(result.output_esdl)
+
     print(result.logs)
 
 
