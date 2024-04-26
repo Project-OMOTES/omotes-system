@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test_system:
-    name: Lint
+    name: Run system tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -19,4 +19,5 @@ jobs:
         cache: 'pip'
     - name: run system tests
       run: |
+        cp .env-template .env
         ./scripts/test_system.sh
