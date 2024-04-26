@@ -1,4 +1,4 @@
-name: Build-Test-Lint-etc (linux)
+name: Run system checks (linux)
 
 on: [push]
 
