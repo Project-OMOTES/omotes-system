@@ -83,22 +83,6 @@ services:
     profiles:
       - manual_dev
 
-  # Skipped in 'docker-compose up', only used in 'setup.sh'
-  orchestrator_postgres_db_upgrade:
-    build: ./orchestrator_postgres_db_upgrade
-    networks:
-      - omotes
-    environment:
-      POSTGRES_ROOT_USER: ${POSTGRES_ROOT_USER}
-      POSTGRES_ROOT_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
-      POSTGRES_HOST: orchestrator_postgres_db
-      POSTGRES_PORT: 5432
-    depends_on:
-      orchestrator_postgres_db:
-        condition: service_healthy
-    profiles:
-      - manual_setup
-
   orchestrator:
     image: ghcr.io/project-omotes/omotes_orchestrator:0.0.10
     restart: unless-stopped
