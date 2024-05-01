@@ -23,6 +23,8 @@ def handle_on_finished(job: Job, result: JobResult):
     )
 
     print(result.logs)
+    print("--------------")
+    print(result.output_esdl)
 
 
 def handle_on_status_update(job: Job, status_update: JobStatusUpdate):
