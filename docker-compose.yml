@@ -119,7 +119,7 @@ services:
         condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
-    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.9
+    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.11
     restart: unless-stopped
     deploy:
       replicas: 2

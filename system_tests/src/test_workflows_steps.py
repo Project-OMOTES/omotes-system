@@ -1,4 +1,5 @@
 import contextlib
+import os
 import threading
 import unittest
 from pathlib import Path
@@ -13,7 +14,13 @@ from omotes_sdk.omotes_interface import (
 )
 from omotes_sdk.workflow_type import WorkflowType, WorkflowTypeManager
 
-RABBITMQ_CONFIG = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
+RABBITMQ_CONFIG = RabbitMQConfig(
+    username=os.environ.get("RABBITMQ_USERNAME", "omotes"),
+    password=os.environ.get("RABBITMQ_PASSWORD", "somepass1"),
+    virtual_host=os.environ.get("RABBITMQ_VIRTUALHOST", "omotes"),
+    host=os.environ.get("RABBITMQ_HOST", "localhost"),
+    port=int(os.environ.get("RABBITMQ_PORT", "5672")),
+)
 
 
 class OmotesJobHandler:
