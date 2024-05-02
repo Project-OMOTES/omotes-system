@@ -15,6 +15,13 @@ rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtua
 
 
 def handle_on_finished(job: Job, result: JobResult):
+    print("--------------Logs:")
+    print(result.logs)
+    print()
+    print("--------------ESDL:")
+    print(result.output_esdl)
+    print()
+    print("--------------Result")
     print(
         f"Job {job.id} is done (type: {job.workflow_type.workflow_type_name}). "
         f"Status: {result.result_type}, output esdl length: {len(result.output_esdl)}, "
