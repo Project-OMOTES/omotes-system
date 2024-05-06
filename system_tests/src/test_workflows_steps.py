@@ -1,5 +1,6 @@
 import contextlib
 import os
+import re
 import threading
 import unittest
 from pathlib import Path
@@ -13,6 +14,7 @@ from omotes_sdk.omotes_interface import (
     JobStatusUpdate,
 )
 from omotes_sdk.workflow_type import WorkflowType, WorkflowTypeManager
+import xmltodict
 
 RABBITMQ_CONFIG = RabbitMQConfig(
     username=os.environ.get("RABBITMQ_USERNAME", "omotes"),
@@ -84,6 +86,13 @@ def retrieve_esdl_file(path_str: str) -> str:
     return esdl_file
 
 
+ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
+
+
+def normalize_esdl(esdl: str) -> dict:
+    return xmltodict.parse(ID_PATTERN.sub('id=""', esdl))
+
+
 def submit_a_job(
     omotes_client: OmotesInterface,
     esdl_file: str,
@@ -118,7 +127,7 @@ class TestWorkflows(unittest.TestCase):
         # Arrange
         workflow_manager_ = workflow_manager()
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/optimizer_poc_tutorial.esdl")
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
         workflow_type = "grow_optimizer_default"
         timeout_seconds = 60.0
 
@@ -131,12 +140,20 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file(
+                    "./test_esdl/output/test__grow_optimizer_default__happy_path.esdl"
+                )
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
 
     def test__grow_optimizer_no_heat_losses__happy_path(self) -> None:
         # Arrange
         workflow_manager_ = workflow_manager()
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/optimizer_poc_tutorial.esdl")
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
         workflow_type = "grow_optimizer_no_heat_losses"
         timeout_seconds = 60.0
 
@@ -149,12 +166,20 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file(
+                    "./test_esdl/output/test__grow_optimizer_no_heat_losses__happy_path.esdl"
+                )
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
 
     def test__grow_optimizer_with_pressure__happy_path(self) -> None:
         # Arrange
         workflow_manager_ = workflow_manager()
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/optimizer_poc_tutorial.esdl")
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
         workflow_type = "grow_optimizer_with_pressure"
         timeout_seconds = 120.0
 
@@ -167,12 +192,20 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file(
+                    "./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl"
+                )
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
 
     def test__grow_simulator__happy_path(self) -> None:
         # Arrange
         workflow_manager_ = workflow_manager()
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/optimizer_poc_tutorial.esdl")
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
         workflow_type = "grow_simulator"
         timeout_seconds = 60.0
 
@@ -185,12 +218,18 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file("./test_esdl/output/test__grow_simulator__happy_path.esdl")
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
 
     def test__simulator__happy_path(self) -> None:
         # Arrange
         workflow_manager_ = workflow_manager()
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/simulator_tutorial.esdl")
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
         timeout_seconds = 60.0
 
@@ -203,3 +242,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
