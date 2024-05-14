@@ -29,7 +29,6 @@ def handle_on_finished(job: Job, result: JobResult):
         f"logs length: {len(result.logs)}"
     )
 
-
 def handle_on_status_update(job: Job, status_update: JobStatusUpdate):
     print(
         f"Job {job.id} progress (type: {job.workflow_type.workflow_type_name}). "
