@@ -63,10 +63,6 @@ def workflow_manager() -> WorkflowTypeManager:
     )
 
 
-def omotes_job_result_handler() -> OmotesJobHandler:
-    return OmotesJobHandler()
-
-
 @contextlib.contextmanager
 def omotes_client(workflow_manager: WorkflowTypeManager) -> OmotesInterface:
     omotes_if = OmotesInterface(RABBITMQ_CONFIG, possible_workflows=workflow_manager)
