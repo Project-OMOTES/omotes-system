@@ -5,7 +5,7 @@
 echo "Using docker compose file at: ${2}"
 
 # Add influxdb users with write access for optimizer/simulator and with admin rights for the frontend (root admin user via env vars)
-$DOCKER_COMPOSE -f ${2} up -d --wait omotes_influxdb
+$DOCKER_COMPOSE -f ${2} up --wait omotes_influxdb
 
 DOCKER_EXEC="$DOCKER_COMPOSE -f ${2} exec omotes_influxdb influx -username "${INFLUXDB_ADMIN_USER}" -password "${INFLUXDB_ADMIN_PASSWORD}" -port "${INFLUXDB_PORT}" -execute"
 

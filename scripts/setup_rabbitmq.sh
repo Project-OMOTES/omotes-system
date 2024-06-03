@@ -2,7 +2,7 @@
 . "$(dirname "$0")"/_select_docker_compose.sh
 . "$(dirname "$0")"/_load_dot_env.sh $1
 
-$DOCKER_COMPOSE -f ${2} up -d --wait rabbitmq
+$DOCKER_COMPOSE -f ${2} up --wait rabbitmq
 
 DOCKER_EXEC="$DOCKER_COMPOSE -f ${2} exec rabbitmq rabbitmqctl"
 ${DOCKER_EXEC} add_vhost omotes
