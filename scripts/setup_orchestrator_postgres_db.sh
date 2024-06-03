@@ -3,8 +3,8 @@
 . "$(dirname "$0")"/_load_dot_env.sh $1
 
 # Deploy postgres omotes schema
-$DOCKER_COMPOSE -f ${2} --profile=manual_dev down orchestrator_postgres_db_dev
-$DOCKER_COMPOSE -f ${2} up -d --wait orchestrator_postgres_db
+$DOCKER_COMPOSE -f ${2} --env-file ${1} --profile=manual_dev down orchestrator_postgres_db_dev
+$DOCKER_COMPOSE -f ${2} --env-file ${1} up -d --wait orchestrator_postgres_db
 
 $DOCKER_COMPOSE -f ${2} exec orchestrator_postgres_db psql -d postgres -c 'CREATE DATABASE omotes_jobs;'
 
