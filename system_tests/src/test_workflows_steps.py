@@ -251,3 +251,83 @@ class TestWorkflows(unittest.TestCase):
             ),
             normalize_esdl(result_handler.result.output_esdl),
         )
+
+    def test__grow_optimizer_default__happy_path_1source(self) -> None:
+        # Arrange
+        workflow_manager_ = workflow_manager()
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_1source.esdl")
+        workflow_type = "grow_optimizer_default"
+        timeout_seconds = 60.0
+
+        # Act
+        with omotes_client(workflow_manager_) as omotes_client_:
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, workflow_manager_, result_handler
+            )
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file(
+                    "./test_esdl/output/test__grow_optimizer_default__happy_path_1source.esdl"
+                )
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
+
+    def test__grow_optimizer_default__happy_path_2ndsource(self) -> None:
+        # Arrange
+        workflow_manager_ = workflow_manager()
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_2ndsource.esdl")
+        workflow_type = "grow_optimizer_default"
+        timeout_seconds = 60.0
+
+        # Act
+        with omotes_client(workflow_manager_) as omotes_client_:
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, workflow_manager_, result_handler
+            )
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file(
+                    "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource.esdl"
+                )
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
+
+    def test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped(self) -> None:
+        # Arrange
+        workflow_manager_ = workflow_manager()
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file(
+            "./test_esdl/input/optimizer_poc_tutorial_2ndsource_merit_order_swapped.esdl"
+        )
+        workflow_type = "grow_optimizer_default"
+        timeout_seconds = 60.0
+
+        # Act
+        with omotes_client(workflow_manager_) as omotes_client_:
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, workflow_manager_, result_handler
+            )
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        self.assertEqual(
+            normalize_esdl(
+                retrieve_esdl_file(
+                    "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped.esdl"
+                )
+            ),
+            normalize_esdl(result_handler.result.output_esdl),
+        )
