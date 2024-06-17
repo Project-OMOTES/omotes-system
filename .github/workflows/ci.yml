@@ -18,5 +18,4 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: run system tests
       run: |
-        cp .env-template .env
         ./scripts/test_system.sh
