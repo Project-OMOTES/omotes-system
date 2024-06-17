@@ -39,7 +39,7 @@ cd example_sdk_client/
 python3 -m venv ./.venv/
 . ./.venv/bin/activate
 pip install -r requirements.txt
-python3 example_sdk_client.py
+python3 optimizer.py
 deactivate
 ```
 
