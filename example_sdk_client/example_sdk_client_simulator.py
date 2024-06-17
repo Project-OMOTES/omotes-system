@@ -11,9 +11,7 @@ from omotes_sdk.omotes_interface import (
 )
 from omotes_sdk.workflow_type import WorkflowType, WorkflowTypeManager
 
-rabbitmq_config = RabbitMQConfig(
-    username="omotes", password="somepass1", virtual_host="omotes"
-)
+rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
 
 
 def handle_on_finished(job: Job, result: JobResult):
@@ -53,6 +51,7 @@ try:
 
     omotes_if = OmotesInterface(rabbitmq_config, possible_workflows=workflow_manager)
     omotes_if.start()
+
     with open(r"./testdata/test1.esdl", "r") as f:
         input_esdl = f.read()
 
