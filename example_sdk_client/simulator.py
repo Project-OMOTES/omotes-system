@@ -52,7 +52,7 @@ try:
     omotes_if = OmotesInterface(rabbitmq_config, possible_workflows=workflow_manager)
     omotes_if.start()
 
-    with open(r"./testdata/test1.esdl", "r") as f:
+    with open(r"./example_esdl_simulator.esdl", "r") as f:
         input_esdl = f.read()
 
     omotes_if.submit_job(
