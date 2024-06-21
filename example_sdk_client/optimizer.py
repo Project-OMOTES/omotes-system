@@ -1,4 +1,3 @@
-import base64
 import time
 
 from omotes_sdk.config import RabbitMQConfig
@@ -8,10 +7,13 @@ from omotes_sdk.omotes_interface import (
     JobResult,
     JobProgressUpdate,
     JobStatusUpdate,
+    AvailableWorkflows,
 )
 from omotes_sdk.workflow_type import WorkflowType, WorkflowTypeManager
 
-rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
+rabbitmq_config = RabbitMQConfig(
+    username="omotes", password="somepass1", virtual_host="omotes"
+)
 
 
 def handle_on_finished(job: Job, result: JobResult):
@@ -43,11 +45,25 @@ def handle_on_progress_update(job: Job, progress_update: JobProgressUpdate):
     )
 
 
+def handle_on_available_workflows_update(
+    available_workflows_pb: AvailableWorkflows,
+) -> None:
+    """When the available workflows are updated.
+
+    :param available_workflows_pb: AvailableWorkflows protobuf message.
+    """
+    workflow_type_manager = WorkflowTypeManager.from_pb_message(available_workflows_pb)
+    print(f"workflow_type_manager updated: {workflow_type_manager.to_dict()}")
+
+
 try:
     workflow_optimizer = WorkflowType("grow_optimizer_default", "some descr")
-    workflow_manager = WorkflowTypeManager([workflow_optimizer])
 
-    omotes_if = OmotesInterface(rabbitmq_config, possible_workflows=workflow_manager)
+    omotes_if = OmotesInterface(
+        rabbitmq_config,
+        callback_on_available_workflows_update=handle_on_available_workflows_update,
+    )
+
     omotes_if.start()
 
     with open('example_esdl_optimizer_poc_tutorial.esdl') as open_file:
@@ -63,6 +79,7 @@ try:
         callback_on_status_update=handle_on_status_update,
         auto_disconnect_on_result=True,
     )
-    time.sleep(60)
+    time.sleep(3)
 finally:
+    print("Closing rabbitmq connection")
     omotes_if.stop()
