@@ -63,3 +63,19 @@ Job cc17549b-2d11-4076-904e-bd548b456e57 is done (type: grow_optimizer). Status:
 2024-02-13 17:27:19,004 [aio_pika.queue][Thread-1][queue.py:526][INFO]: <RobustQueueIterator: queue='jobs.cc17549b-2d11-4076-904e-bd548b456e57.status' ctag='ctag1.66d19448a3354b1292fec482738b9e23'> closing with timeout 5 seconds
 2024-02-13 17:27:19,011 [omotes_sdk][Thread-1][broker_interface.py:228][INFO]: Stopped broker interface
 ```
+
+# Licensing & legal considerations
+We have opensourced the OMOTES stack under GPLv3. This ensures that the components of OMOTES are not
+altered and run closed-source but changes to OMOTES components are required to also be opensourced.
+However, the GPLv3 license does not prevent from OMOTES being used in a closed-source, commercial
+setting. The OMOTES stack is orchestrated by using one of the OMOTES SDK packages to communicate
+over the network with OMOTES. As such, the copy-left virality of the GPLv3 license does not apply
+to any application or system which integrates and uses OMOTES through the SDK packages. Each of the
+SDK packages is licensed using a permissive license. This is all done with the goal of ensuring an
+opensource, common calculation and model backend which is available to all but allow companies to
+use OMOTES without legal hurdles.
+
+In case you have any bug fixes or generally-usable extensions, it would be greatly appreciated
+if you make these changes available to one of the relevant OMOTES repositories so we can integrate
+them for all. The licenses, however, do not require changes to be opensourced to the original
+OMOTES repositories and it is up to the developer on how to opensource any changes.
