@@ -1,0 +1,58 @@
+[
+  {
+    "workflow_type_name": "workflow_1",
+    "workflow_type_description_name": "Example workflow without parameters (except the ESDL)."
+  },
+  {
+    "workflow_type_name": "workflow_2",
+    "workflow_type_description_name": "Example workflow with parameters.",
+    "workflow_parameters": [
+      {
+        "parameter_type": "string",
+        "key_name": "string_example",
+        "title": "Optional, will override the 'capitalized, underscore to space', key_name",
+        "description": "Optional description/explanation.",
+        "default": "Optional default value",
+        "enum_options": [
+          {
+            "key_name": "key1",
+            "display_name": "Display name 1"
+          },
+          {
+            "key_name": "key2",
+            "display_name": "Display name 2"
+          }
+        ]
+      },
+      {
+        "parameter_type": "boolean",
+        "key_name": "boolean_example",
+        "title": "Optional, will override the 'capitalized, underscore to space', key_name",
+        "description": "Optional description/explanation.",
+        "default": true
+      },
+      {
+        "parameter_type": "integer",
+        "key_name": "integer_example",
+        "title": "This will override the 'capitalized, underscore to space', key_name",
+        "description": "Description/explanation.",
+        "default": 1,
+        "minimum": 0,
+        "maximum": 10
+      },
+      {
+        "parameter_type": "float",
+        "key_name": "float_example",
+        "title": "This will override the 'capitalized, underscore to space', key_name",
+        "description": "Description/explanation.",
+        "default": 1.5,
+        "minimum": 0.0,
+        "maximum": 9.5
+      },
+      {
+        "parameter_type": "datetime",
+        "key_name": "datetime_example"
+      }
+    ]
+  }
+]

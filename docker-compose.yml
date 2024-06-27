@@ -85,42 +85,44 @@ services:
     profiles:
       - manual_dev
 
-#  orchestrator:
-#    image: ghcr.io/project-omotes/omotes_orchestrator:0.0.12
-#    restart: unless-stopped
-#    networks:
-#      - omotes
-#    environment:
-#      CELERY_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
-#      CELERY_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
-#      CELERY_RABBITMQ_HOSTNAME: rabbitmq-nwn
-#      CELERY_RABBITMQ_PORT: 5672
-#      CELERY_RABBITMQ_VIRTUALHOST: omotes_celery
-#
-#      SDK_RABBITMQ_USERNAME: ${RABBITMQ_OMOTES_USER_NAME}
-#      SDK_RABBITMQ_PASSWORD: ${RABBITMQ_OMOTES_USER_PASSWORD}
-#      SDK_RABBITMQ_HOSTNAME: rabbitmq-nwn
-#      SDK_RABBITMQ_PORT: 5672
-#      SDK_RABBITMQ_VIRTUALHOST: omotes
-#
-#      TASK_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
-#      TASK_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
-#      TASK_RABBITMQ_HOSTNAME: rabbitmq-nwn
-#      TASK_RABBITMQ_PORT: 5672
-#      TASK_RABBITMQ_VIRTUALHOST: omotes_celery
-#
-#      POSTGRESQL_HOST: orchestrator_postgres_db
-#      POSTGRESQL_PORT: 5432
-#      POSTGRESQL_DATABASE: omotes_jobs
-#      POSTGRESQL_USERNAME: ${POSTGRES_ORCHESTRATOR_USER_NAME}
-#      POSTGRESQL_PASSWORD: ${POSTGRES_ORCHESTRATOR_USER_PASSWORD}
-#
-#      LOG_LEVEL: ${LOG_LEVEL}
-#    depends_on:
-#      rabbitmq:
-#        condition: service_healthy
-#      orchestrator_postgres_db:
-#        condition: service_healthy
+  orchestrator:
+    image: ghcr.io/project-omotes/omotes_orchestrator:0.0.12
+    restart: unless-stopped
+    networks:
+      - omotes
+    volumes:
+      - "./config/workflow_config_nwn.json:/config/workflow_config.json"
+    environment:
+      CELERY_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
+      CELERY_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+      CELERY_RABBITMQ_HOSTNAME: rabbitmq-nwn
+      CELERY_RABBITMQ_PORT: 5672
+      CELERY_RABBITMQ_VIRTUALHOST: omotes_celery
+
+      SDK_RABBITMQ_USERNAME: ${RABBITMQ_OMOTES_USER_NAME}
+      SDK_RABBITMQ_PASSWORD: ${RABBITMQ_OMOTES_USER_PASSWORD}
+      SDK_RABBITMQ_HOSTNAME: rabbitmq-nwn
+      SDK_RABBITMQ_PORT: 5672
+      SDK_RABBITMQ_VIRTUALHOST: omotes
+
+      TASK_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
+      TASK_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
+      TASK_RABBITMQ_HOSTNAME: rabbitmq-nwn
+      TASK_RABBITMQ_PORT: 5672
+      TASK_RABBITMQ_VIRTUALHOST: omotes_celery
+
+      POSTGRESQL_HOST: orchestrator_postgres_db
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_DATABASE: omotes_jobs
+      POSTGRESQL_USERNAME: ${POSTGRES_ORCHESTRATOR_USER_NAME}
+      POSTGRESQL_PASSWORD: ${POSTGRES_ORCHESTRATOR_USER_PASSWORD}
+
+      LOG_LEVEL: ${LOG_LEVEL}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      orchestrator_postgres_db:
+        condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
     image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:1.0.14
