@@ -1,0 +1,7 @@
+services:
+
+  orchestrator:
+    image: omotes-orchestrator-dev
+    build:
+      context: ..
+      dockerfile: orchestrator/dev.Dockerfile
