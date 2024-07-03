@@ -127,6 +127,10 @@ services:
     restart: unless-stopped
     deploy:
       replicas: 2
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4gb
     networks:
       - omotes
     environment: &grow_worker_env
@@ -170,6 +174,10 @@ services:
     restart: unless-stopped
     deploy:
       replicas: 2
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4gb
     networks:
       - omotes
     environment:
