@@ -11,7 +11,10 @@ else
   echo ".env file at ${PATH_TO_DOT_ENV} does not exist. Environment variables are expected to be set in another way."
 fi
 
-ENV_VARS=$(cat ./.env.template | sed 's/\=.*//' | grep . -)
+SCRIPT_DIR="$(dirname "$0")/../"
+REPO_ROOT_DIR=$(realpath "$SCRIPT_DIR")
+echo "Using repository root directory to find .env.template: ${REPO_ROOT_DIR}"
+ENV_VARS=$(cat ${REPO_ROOT_DIR}/.env.template | sed 's/\=.*//' | grep . -)
 
 any_missing=false
 while IFS= read -r ENV_VAR; do
