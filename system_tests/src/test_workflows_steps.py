@@ -90,10 +90,13 @@ def retrieve_esdl_file(path_str: str) -> str:
 
 
 ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
+DATABASE_PATTERN = re.compile(r"database=\"[a-z0-9-]+\"")
 
 
 def normalize_esdl(esdl: str) -> dict:
-    return xmltodict.parse(ID_PATTERN.sub('id=""', esdl))
+    esdl_normalized = ID_PATTERN.sub('id=""', esdl)
+    esdl_normalized = DATABASE_PATTERN.sub('database=""', esdl_normalized)
+    return xmltodict.parse(esdl_normalized)
 
 
 def submit_a_job(
