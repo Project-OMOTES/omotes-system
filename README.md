@@ -5,7 +5,7 @@ The infrastructure consists of the following components:
 - Optimization workers
 
 ## Setup infrastructure
-Copy `.env-template` to `.env` and fill with the appropriate values.  
+Copy `.env.template` to `.env` and fill with the appropriate values.  
 
 ### Workflow configuration
 The available workflows are configured via a json file, for an example see: `/config/workflow_config_example.json`  
