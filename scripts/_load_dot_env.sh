@@ -11,7 +11,7 @@ else
   echo ".env file at ${PATH_TO_DOT_ENV} does not exist. Environment variables are expected to be set in another way."
 fi
 
-ENV_VARS=$(cat ./.env-template | sed 's/\=.*//' | grep . -)
+ENV_VARS=$(cat ./.env.template | sed 's/\=.*//' | grep . -)
 
 any_missing=false
 while IFS= read -r ENV_VAR; do
