@@ -50,8 +50,17 @@
         "maximum": 9.5
       },
       {
+        "parameter_type": "float",
+        "key_name": "float_example_basic"
+      },
+      {
         "parameter_type": "datetime",
         "key_name": "datetime_example"
+      },
+      {
+        "parameter_type": "datetime",
+        "key_name": "datetime_example_with_default",
+        "default": "2023-12-31T20:00:00"
       }
     ]
   }

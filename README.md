@@ -5,14 +5,14 @@ The infrastructure consists of the following components:
 - Optimization workers
 
 ## Setup infrastructure
-Copy `.env-template` to `.env` and fill with the appropriate values.  
+Copy `.env.template` to `.env` and fill with the appropriate values.  
 
 ### Workflow configuration
 The available workflows are configured via a json file, for an example see: `/config/workflow_config_example.json`  
 A workflow must have a `workflow_type_name` and `workflow_type_description_name`.
 The `workflow_parameters` are optional, for workflows that need additional information next to the ESDL.
 Each workflow parameter must have a `parameter_type` and `key_name`, all others are optional.  
-See `/config/workflow_config_example.json` for options for the `string`, `boolean`, `integer`, `float` and `datetime` parameter formats.
+See `config/workflow_config_example.json` for options for the `string`, `boolean`, `integer`, `float` and `datetime` parameter formats.
 
 In `docker-compose.yml` the config file to use is specified in the `orchestrator` service in the `volumes` section.
 
