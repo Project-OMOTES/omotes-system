@@ -5,3 +5,24 @@ services:
     build:
       context: ..
       dockerfile: orchestrator/dev.Dockerfile
+
+  grow_worker_optimizer: &grow_worker
+    image: omotes-worker-mesido-dev
+    build:
+      context: ..
+      dockerfile: optimizer-worker/dev.Dockerfile
+
+  grow_worker_simulator:
+    <<: *grow_worker
+
+  grow_worker_optimizer_no_heat_losses:
+    <<: *grow_worker
+
+  grow_worker_optimizer_with_pressure:
+    <<: *grow_worker
+
+  omotes_simulator_worker:
+    image: omotes-worker-simulator-dev
+    build:
+      context: ..
+      dockerfile: simulator-worker/dev.Dockerfile
