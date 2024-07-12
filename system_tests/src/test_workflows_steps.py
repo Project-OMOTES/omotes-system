@@ -19,7 +19,7 @@ import xmltodict
 # TODO Now the SQL setup is moved to orchestrator, it takes a while for orchestrator to boot up.
 #   Therefore, the queues may not yet have been declared. We should fix this in SDK by declaring
 #   all the expected queues on orchestrators side on start up to ensure they are up.
-#   See https://github.com/Project-OMOTES/computation-engine/issues/51
+#   See https://github.com/Project-OMOTES/omotes-system/issues/51
 time.sleep(5)
 
 RABBITMQ_CONFIG = RabbitMQConfig(

@@ -1,4 +1,4 @@
-# Computation Engine - NWN
+# Omotes System
 Setup the required infrastructure and database migrations.
 The infrastructure consists of the following components:
 - RabbitMQ message broker
