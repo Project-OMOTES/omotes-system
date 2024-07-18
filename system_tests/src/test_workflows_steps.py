@@ -5,6 +5,7 @@ import threading
 import time
 import unittest
 from pathlib import Path
+from pprint import pformat
 
 from omotes_sdk.config import RabbitMQConfig
 from omotes_sdk.omotes_interface import (
@@ -15,6 +16,7 @@ from omotes_sdk.omotes_interface import (
     JobStatusUpdate,
 )
 import xmltodict
+from deepdiff import DeepDiff
 
 # TODO Now the SQL setup is moved to orchestrator, it takes a while for orchestrator to boot up.
 #   Therefore, the queues may not yet have been declared. We should fix this in SDK by declaring
@@ -77,10 +79,13 @@ def retrieve_esdl_file(path_str: str) -> str:
 
 
 ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
+DATABASE_PATTERN = re.compile(r"database=\"[a-z0-9-]+\"")
 
 
 def normalize_esdl(esdl: str) -> dict:
-    return xmltodict.parse(ID_PATTERN.sub('id=""', esdl))
+    esdl_normalized = ID_PATTERN.sub('id=""', esdl)
+    esdl_normalized = DATABASE_PATTERN.sub('database=""', esdl_normalized)
+    return xmltodict.parse(esdl_normalized)
 
 
 def submit_a_job(
@@ -118,6 +123,13 @@ class TestWorkflows(unittest.TestCase):
                 f"The job did not finish as {expected_result}. Found {result.result_type}"
             )
 
+    def compare_esdl(self, expected_esdl: str, result_esdl: str) -> None:
+        expected = normalize_esdl(expected_esdl)
+        result = normalize_esdl(result_esdl)
+        diff_msg = pformat(DeepDiff(expected, result))
+
+        self.assertEqual(expected, result, msg=f'Found the following differences:\n{diff_msg}')
+
     def test__grow_optimizer_default__happy_path(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
@@ -132,14 +144,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_optimizer_default__happy_path.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_optimizer_default__happy_path.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__grow_optimizer_no_heat_losses__happy_path(self) -> None:
         # Arrange
@@ -155,14 +161,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_optimizer_no_heat_losses__happy_path.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_optimizer_no_heat_losses__happy_path.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__grow_optimizer_with_pressure__happy_path(self) -> None:
         # Arrange
@@ -178,14 +178,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__grow_simulator__happy_path(self) -> None:
         # Arrange
@@ -201,14 +195,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_simulator__happy_path.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_simulator__happy_path.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__simulator__happy_path(self) -> None:
         # Arrange
@@ -224,21 +212,13 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__simulator__happy_path.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__grow_optimizer_default__happy_path_1source(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file(
-            "./test_esdl/input/optimizer_poc_tutorial_1source.esdl"
-        )
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_1source.esdl")
         workflow_type = "grow_optimizer_default"
         timeout_seconds = 60.0
 
@@ -249,21 +229,13 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_optimizer_default__happy_path_1source.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_optimizer_default__happy_path_1source.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__grow_optimizer_default__happy_path_2ndsource(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file(
-            "./test_esdl/input/optimizer_poc_tutorial_2ndsource.esdl"
-        )
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_2ndsource.esdl")
         workflow_type = "grow_optimizer_default"
         timeout_seconds = 60.0
 
@@ -274,23 +246,15 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped(
         self,
     ) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file(
-            "./test_esdl/input/optimizer_poc_tutorial_2ndsource_merit_order_swapped.esdl"
-        )
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_2ndsource_merit_order_swapped.esdl")
         workflow_type = "grow_optimizer_default"
         timeout_seconds = 60.0
 
@@ -301,11 +265,5 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        self.assertEqual(
-            normalize_esdl(
-                retrieve_esdl_file(
-                    "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped.esdl"
-                )
-            ),
-            normalize_esdl(result_handler.result.output_esdl),
-        )
+        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped.esdl")
+        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
