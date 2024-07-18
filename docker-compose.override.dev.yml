@@ -26,3 +26,7 @@ services:
     build:
       context: ..
       dockerfile: simulator-worker/dev.Dockerfile
+
+  orchestrator_postgres_db:
+    ports:
+      - "${POSTGRES_DEV_PORT}:5432"

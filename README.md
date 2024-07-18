@@ -44,8 +44,10 @@ To stop the components:
 ./scripts/stop.sh
 ```
 
+#### Run in dev mode
+
 Alternatively the components can be run using local code. This requires all omotes repositories to
-be located in the same parent folder.
+be located in the same parent folder. This setup will also expose the postgres database:
 
 ```
 ./scripts/start-dev.sh
