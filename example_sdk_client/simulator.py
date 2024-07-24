@@ -10,9 +10,7 @@ from omotes_sdk.omotes_interface import (
     JobStatusUpdate,
 )
 
-rabbitmq_config = RabbitMQConfig(
-    username="omotes", password="somepass1", virtual_host="omotes"
-)
+rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
 
 
 def handle_on_finished(job: Job, result: JobResult):
@@ -47,12 +45,10 @@ def handle_on_progress_update(job: Job, progress_update: JobProgressUpdate):
 
 
 try:
-    omotes_if = OmotesInterface(rabbitmq_config)
+    omotes_if = OmotesInterface(rabbitmq_config, "example_sdk")
     omotes_if.start()
 
-    workflow_simulator = omotes_if.get_workflow_type_manager().get_workflow_by_name(
-        "simulator"
-    )
+    workflow_simulator = omotes_if.get_workflow_type_manager().get_workflow_by_name("simulator")
 
     with open(r"./example_esdl_simulator.esdl", "r") as f:
         input_esdl = f.read()
@@ -60,12 +56,12 @@ try:
     omotes_if.submit_job(
         esdl=input_esdl,
         params_dict={
-            "timestep_s": 3600,
-            "start_time_unix_s": datetime.datetime(2019, 1, 2, 0, 0, 0).timestamp(),
-            "end_time_unix_s": datetime.datetime(2019, 1, 2, 3, 0, 0).timestamp(),
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 2, 0, 0, 0),
+            "end_time": datetime.datetime(2019, 1, 2, 3, 0, 0),
         },
         workflow_type=workflow_simulator,
-        job_timeout=None,
+        job_timeout=datetime.timedelta(hours=1),
         callback_on_finished=handle_on_finished,
         callback_on_progress_update=handle_on_progress_update,
         callback_on_status_update=handle_on_status_update,
