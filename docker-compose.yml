@@ -91,7 +91,7 @@ services:
     networks:
       - omotes
     volumes:
-      - "./config/workflow_config_nwn.json:/config/workflow_config.json"
+      - "${WORKFLOW_SETTINGS_FILE}:/config/workflow_config.json"
     environment:
       CELERY_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
       CELERY_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
