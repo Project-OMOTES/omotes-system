@@ -61,6 +61,12 @@
         "parameter_type": "datetime",
         "key_name": "datetime_example_with_default",
         "default": "2023-12-31T20:00:00"
+      },
+      {
+        "parameter_type": "duration",
+        "key_name": "duration_example_with_default",
+        "description": "The default is in milliseconds.",
+        "default": 3000
       }
     ]
   }
