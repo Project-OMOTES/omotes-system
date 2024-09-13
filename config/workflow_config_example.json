@@ -65,8 +65,10 @@
       {
         "parameter_type": "duration",
         "key_name": "duration_example_with_default",
-        "description": "The default is in milliseconds.",
-        "default": 3000
+        "description": "The default is in seconds.",
+        "default": 900.0,
+        "minimum": 0.0,
+        "maximum": 1500.0
       }
     ]
   }
