@@ -131,6 +131,7 @@ services:
         limits:
           cpus: '4'
           memory: 4gb
+    memswap_limit: 4gb
     networks:
       - omotes
     environment: &grow_worker_env
@@ -178,6 +179,7 @@ services:
         limits:
           cpus: '4'
           memory: 4gb
+    memswap_limit: 4gb
     networks:
       - omotes
     environment:
