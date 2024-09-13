@@ -14,3 +14,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * 77: Update optimizer worker to 2.0.0 to include mesido 0.1.5.2 which also includes influxdb schema changes. by @lfse-slafleur in https://github.com/Project-OMOTES/omotes-system/pull/78
 * 66: Workflow definitions are now shared by orchestrator with the SDK and are updated on any changes. by @MarkTNO  in https://github.com/Project-OMOTES/omotes-system/pull/67
 * 92: Update to SDK 3.0.0 and orchestrator 1.0.0 to integrate single job submission queue and multi-sdk support for sharing workflow definitions from the orchestrator to any SDK. by @lfse-slafleur in https://github.com/Project-OMOTES/omotes-system/pull/93
+* 95: Update optimizer worker to 2.0.2 which includes mesido 0.1.7.0. by @lfse-slafleur in https://github.com/Project-OMOTES/omotes-system/pull/96
