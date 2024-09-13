@@ -50,3 +50,6 @@ This version uses the following models:
     inactivity. After 48 hours, we assume the SDK is not interested in the result of a job anymore.
   * start_time, end_time and timestep parameters are now all submitted with a simulator workflow
     job submission.
+* 59: Add hardware limits for workers. by lfse-slafleur in 
+  https://github.com/Project-OMOTES/omotes-system/pull/73
+  * Workers now all have a 4GB memory limit to prevent OOM on the host machine.
