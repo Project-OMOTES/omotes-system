@@ -5,13 +5,13 @@ kubectl apply -f omotes-namespace.yaml
 kubectl apply -f env-vars-configmap-secrets.yaml
 
 kubectl apply -f postgres-init-configmap.yaml
-kubectl apply -f postgres-data-persistentvolumeclaim.yaml
+kubectl apply -f postgres-persistentvolumeclaim.yaml
 kubectl apply -f postgres-deployment.yaml
 kubectl apply -f postgres-service.yaml
 
 kubectl apply -f rabbitmq-conf-configmap.yaml
 kubectl apply -f rabbitmq-init-configmap.yaml
-kubectl apply -f broker-data-persistentvolumeclaim.yaml
+kubectl apply -f rabbitmq-persistentvolumeclaim.yaml
 kubectl apply -f rabbitmq-deployment.yaml
 kubectl apply -f rabbitmq-service.yaml
 

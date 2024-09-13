@@ -69,7 +69,7 @@ spec:
           ]
           volumeMounts:
             - mountPath: /var/lib/rabbitmq
-              name: broker-data
+              name: rabbitmq-data
             - name: rabbitmq-init-cm
               mountPath: /rabbitmq-init.sh
               subPath: rabbitmq-init.sh
@@ -106,16 +106,16 @@ spec:
               protocol: TCP
           volumeMounts:
             - mountPath: /var/lib/rabbitmq
-              name: broker-data
+              name: rabbitmq-data
             - mountPath: /etc/rabbitmq/rabbitmq.conf
               name: rabbitmq-conf-cm
               subPath: rabbitmq.conf
       hostname: rabbitmq-nwn
       restartPolicy: Always
       volumes:
-        - name: broker-data
+        - name: rabbitmq-data
           persistentVolumeClaim:
-            claimName: broker-data
+            claimName: rabbitmq-data
         - configMap:
             items:
               - key: rabbitmq.conf
