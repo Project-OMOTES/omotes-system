@@ -1,8 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    io.kompose.service: broker-data
+  namespace: omotes
   name: broker-data
 spec:
   accessModes:

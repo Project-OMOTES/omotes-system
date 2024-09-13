@@ -1,24 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: ./kompose -f docker-compose.yml convert
-    kompose.version: 1.34.0 (cbf2835db)
+  namespace: omotes
   labels:
-    io.kompose.service: omotes-simulator-worker
+    app: omotes-simulator-worker
   name: omotes-simulator-worker
 spec:
   replicas: 2
   selector:
     matchLabels:
-      io.kompose.service: omotes-simulator-worker
+      appe: omotes-simulator-worker
   template:
     metadata:
-      annotations:
-        kompose.cmd: ./kompose -f docker-compose.yml convert
-        kompose.version: 1.34.0 (cbf2835db)
       labels:
-        io.kompose.service: omotes-simulator-worker
+        app: omotes-simulator-worker
     spec:
       containers:
         - env:
