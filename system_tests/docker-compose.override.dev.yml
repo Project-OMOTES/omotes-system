@@ -1,0 +1,5 @@
+services:
+  system_tests:
+    build:
+      context: ..
+      dockerfile: omotes-system/system_tests/dev.Dockerfile # This is referenced from root of repo due to how docker-compose works.

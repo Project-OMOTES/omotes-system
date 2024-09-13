@@ -1,5 +1,5 @@
 import time
-from uuid import UUID
+from datetime import timedelta
 
 from omotes_sdk.config import RabbitMQConfig
 from omotes_sdk.omotes_interface import (
@@ -44,11 +44,10 @@ def handle_on_progress_update(job: Job, progress_update: JobProgressUpdate):
 
 
 workflow_optimizer = WorkflowType("grow_optimizer_default", "some descr")
-workflow_manager = WorkflowTypeManager([workflow_optimizer])
 
 
 try:
-    omotes_if_1 = OmotesInterface(rabbitmq_config, possible_workflows=workflow_manager)
+    omotes_if_1 = OmotesInterface(rabbitmq_config, "example_sdk")
     with open("example_esdl_optimizer_poc_tutorial.esdl") as open_file:
         input_esdl = open_file.read()
 
@@ -57,7 +56,7 @@ try:
         esdl=input_esdl,
         params_dict={"key1": "value1", "key2": ["just", "a", "list", "with", "an", "integer", 3]},
         workflow_type=workflow_optimizer,
-        job_timeout=None,
+        job_timeout=timedelta(hours=1),
         callback_on_finished=handle_on_finished,
         callback_on_progress_update=handle_on_progress_update,
         callback_on_status_update=handle_on_status_update,
@@ -79,7 +78,7 @@ time.sleep(5)
 print("Reconnecting...")
 
 try:
-    omotes_if_2 = OmotesInterface(rabbitmq_config, possible_workflows=workflow_manager)
+    omotes_if_2 = OmotesInterface(rabbitmq_config, "example_sdk")
     omotes_if_2.start()
     omotes_if_2.connect_to_submitted_job(
         job=Job(id=submitted_job.id, workflow_type=workflow_optimizer),

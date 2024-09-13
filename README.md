@@ -1,25 +1,60 @@
-# Computation Engine - NWN
+# Omotes System
+
 Setup the required infrastructure and database migrations.
 The infrastructure consists of the following components:
+
 - RabbitMQ message broker
 - Optimization workers
 
 ## Setup infrastructure
-Copy `.env-template` to `.env` and fill with the appropriate values.  
+
+Copy `.env.template` to `.env` and fill with the appropriate values.
+
+### Workflow configuration
+
+The available workflows are configured via a json file, for an example
+see: `/config/workflow_config_example.json`  
+A workflow must have a `workflow_type_name` and `workflow_type_description_name`.
+The `workflow_parameters` are optional, for workflows that need additional information next to the
+ESDL.
+Each workflow parameter must have a `parameter_type` and `key_name`, all others are optional.  
+See `config/workflow_config_example.json` for options for
+the `string`, `boolean`, `integer`, `float` and `datetime` parameter formats.
+
+In `docker-compose.yml` the config file to use is specified in the `orchestrator` service in
+the `volumes` section.
+
+### Start infrastructure
+
 To setup the infrastructure components (for windows run in `Git Bash`):
+
 ```
 ./scripts/setup.sh
 ```
+
 To start the infrastructure components:
+
 ```
 ./scripts/start.sh
 ```
+
 To stop the components:
+
 ```
 ./scripts/stop.sh
 ```
 
+#### Run in dev mode
+
+Alternatively the components can be run using local code. This requires all omotes repositories to
+be located in the same parent folder. This setup will also expose the postgres database:
+
+```
+./scripts/start-dev.sh
+```
+
 ## Update infrastructure
+
 In order to update the infrastructure, you first stop the current system, setup the new system
 and start it. Docker and other tooling will ensure only updated infrastructure components will be
 replaced.
@@ -31,6 +66,7 @@ replaced.
 ```
 
 ## Quickstart example
+
 Once the infrastructure is up and running, an example job may be run to check if the infrastructure
 is behaving as expected. The example may be found in `example_sdk_client/`. To run it:
 
@@ -44,6 +80,7 @@ deactivate
 ```
 
 We expect similar output to:
+
 ```bash
 Will use log level LogLevel.INFO for logger 'omotes_sdk'
 Will use log level LogLevel.INFO for logger 'omotes_sdk_internal'
@@ -65,6 +102,7 @@ Job cc17549b-2d11-4076-904e-bd548b456e57 is done (type: grow_optimizer). Status:
 ```
 
 # Licensing & legal considerations
+
 We have opensourced the OMOTES stack under GPLv3. This ensures that the components of OMOTES are not
 altered and run closed-source but changes to OMOTES components are required to also be opensourced.
 However, the GPLv3 license does not prevent from OMOTES being used in a closed-source, commercial
