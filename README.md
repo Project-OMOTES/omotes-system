@@ -21,8 +21,8 @@ Each workflow parameter must have a `parameter_type` and `key_name`, all others 
 See `config/workflow_config_example.json` for options for
 the `string`, `boolean`, `integer`, `float` and `datetime` parameter formats.
 
-In `docker-compose.yml` the config file to use is specified in the `orchestrator` service in
-the `volumes` section.
+Set the environment variable `WORKFLOW_SETTINGS_FILE` to the file to be used by the orchestrator,
+which will pass the workflows definitions to the sdk.
 
 ### Start infrastructure
 
