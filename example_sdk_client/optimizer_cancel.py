@@ -1,4 +1,6 @@
+import threading
 import time
+import uuid
 from datetime import timedelta
 
 from omotes_sdk.config import RabbitMQConfig
@@ -11,6 +13,7 @@ from omotes_sdk.omotes_interface import (
 )
 
 rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
+STOP_EVENT = threading.Event()
 
 
 def handle_on_finished(job: Job, result: JobResult):
@@ -26,6 +29,7 @@ def handle_on_finished(job: Job, result: JobResult):
         f"Status: {result.result_type}, output esdl length: {len(result.output_esdl)}, "
         f"logs length: {len(result.logs)}"
     )
+    STOP_EVENT.set()
 
 
 def handle_on_status_update(job: Job, status_update: JobStatusUpdate):
@@ -43,7 +47,7 @@ def handle_on_progress_update(job: Job, progress_update: JobProgressUpdate):
 
 
 try:
-    omotes_if = OmotesInterface(rabbitmq_config, "example_sdk")
+    omotes_if = OmotesInterface(rabbitmq_config, f"example_sdk_{uuid.uuid4()}")
     omotes_if.start()
 
     workflow_optimizer = omotes_if.get_workflow_type_manager().get_workflow_by_name(
@@ -65,6 +69,6 @@ try:
     )
     time.sleep(8)
     omotes_if.cancel_job(job)
-    time.sleep(58)
+    STOP_EVENT.wait()
 finally:
     omotes_if.stop()

@@ -1,5 +1,5 @@
-import time
 import datetime
+import threading
 
 from omotes_sdk.config import RabbitMQConfig
 from omotes_sdk.omotes_interface import (
@@ -11,6 +11,7 @@ from omotes_sdk.omotes_interface import (
 )
 
 rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
+STOP_EVENT = threading.Event()
 
 
 def handle_on_finished(job: Job, result: JobResult):
@@ -28,6 +29,7 @@ def handle_on_finished(job: Job, result: JobResult):
     )
     with open(f"result_{job.id}.esdl", "w") as file:
         file.writelines(result.output_esdl)
+    STOP_EVENT.set()
 
 
 def handle_on_status_update(job: Job, status_update: JobStatusUpdate):
@@ -67,6 +69,6 @@ try:
         callback_on_status_update=handle_on_status_update,
         auto_disconnect_on_result=True,
     )
-    time.sleep(20)
+    STOP_EVENT.wait()
 finally:
     omotes_if.stop()
