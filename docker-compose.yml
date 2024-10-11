@@ -80,6 +80,7 @@ services:
   # Skipper in 'docker-compose up', only used to develop database revisions.
   orchestrator_postgres_db_dev:
     <<: *orchestrator_postgres_db
+    hostname: orchestrator_postgres_db
     ports:
       - "${POSTGRES_DEV_PORT}:5432"
     profiles:
@@ -173,7 +174,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.11
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.12
     restart: unless-stopped
     deploy:
       replicas: 2
