@@ -4,3 +4,4 @@ pytest-timeout
 xmltodict ~= 0.13.0
 pip-tools
 deepdiff ~= 7.0
+pyesdl ~= 24.2
