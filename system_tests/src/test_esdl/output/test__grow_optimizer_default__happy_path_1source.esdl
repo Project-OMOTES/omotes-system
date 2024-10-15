@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<esdl:EnergySystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:esdl="http://www.tno.nl/esdl" version="6" description="" esdlVersion="v2207" name="PoC Tutorial_GrowOptimized" id="9a8a8e72-eb00-4987-af33-444665a17717">
+<esdl:EnergySystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:esdl="http://www.tno.nl/esdl" version="6" description="" esdlVersion="v2207" name="PoC Tutorial_grow_optimizer_default" id="9a8a8e72-eb00-4987-af33-444665a17717">
   <instance xsi:type="esdl:Instance" name="Untitled instance" id="9af52a01-24e2-4bbe-a7b8-f868161e6ca3">
     <area xsi:type="esdl:Area" name="Untitled area" id="9edf5aa3-3855-4dac-b6f5-01c2edf1a43a">
       <KPIs xsi:type="esdl:KPIs" id="844ab6bb-e1a7-4174-a5ab-99b830336ebe">
