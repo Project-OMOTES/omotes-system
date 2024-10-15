@@ -87,7 +87,7 @@ services:
       - manual_dev
 
   orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:1.1.0
+    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.0
     restart: unless-stopped
     networks:
       - omotes
