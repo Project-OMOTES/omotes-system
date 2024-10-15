@@ -330,7 +330,10 @@ class TestWorkflows(unittest.TestCase):
             submitted_job = submit_a_job(
                 omotes_client_, esdl_file, workflow_type, params_dict, result_handler
             )
+            result_handler.wait_until_result(timeout_seconds)
 
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
         first_update = next(
             (update for update in result_handler.progress_updates if update.progress == 0.0), None
         )
