@@ -126,7 +126,7 @@ services:
         condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
-    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:2.0.3
+    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:2.0.4
     restart: unless-stopped
     deploy:
       replicas: 2
@@ -174,7 +174,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.12
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.13
     restart: unless-stopped
     deploy:
       replicas: 2
