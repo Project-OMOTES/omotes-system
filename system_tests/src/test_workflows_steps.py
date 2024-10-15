@@ -4,6 +4,7 @@ import os
 import re
 import threading
 import unittest
+import uuid
 from datetime import timedelta
 from pathlib import Path
 from pprint import pformat
@@ -91,8 +92,8 @@ def submit_a_job(
     workflow_type: str,
     params_dict: ParamsDict,
     omotes_job_result_handler: OmotesJobHandler,
-):
-    omotes_client.submit_job(
+) -> Job:
+    return omotes_client.submit_job(
         esdl=esdl_file,
         workflow_type=omotes_client.get_workflow_type_manager().get_workflow_by_name(workflow_type),
         job_timeout=timedelta(hours=1),
@@ -285,3 +286,35 @@ class TestWorkflows(unittest.TestCase):
             "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped.esdl"
         )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
+
+    def test__simulator__check_if_progress_updates_are_received(self) -> None:
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
+        workflow_type = "simulator"
+        timeout_seconds = 60.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0),
+        }
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submitted_job = submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        first_update = next(
+            (update for update in result_handler.progress_updates if update.progress == 0.0), None
+        )
+        last_update = next(
+            (update for update in result_handler.progress_updates if update.progress == 1.0), None
+        )
+        self.assertIsNotNone(first_update)
+        self.assertEqual(submitted_job.id, uuid.UUID(first_update.uuid))
+        self.assertIsNotNone(last_update)
+        self.assertEqual(submitted_job.id, uuid.UUID(last_update.uuid))
