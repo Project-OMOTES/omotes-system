@@ -20,6 +20,7 @@ from omotes_sdk.omotes_interface import (
 import xmltodict
 from deepdiff import DeepDiff
 from omotes_sdk.types import ParamsDict
+import esdl.esdl_handler
 
 
 RABBITMQ_CONFIG = RabbitMQConfig(
@@ -287,6 +288,31 @@ class TestWorkflows(unittest.TestCase):
         )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
+    def test__simulator__job_reference_is_set(self) -> None:
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
+        workflow_type = "simulator"
+        timeout_seconds = 60.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0),
+        }
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        output_esh = esdl.esdl_handler.EnergySystemHandler()
+        output_esh.load_from_string(result_handler.result.output_esdl)
+        self.assertEqual(
+            output_esh.energy_system.name, "Untitled EnergySystem with return network_simulator"
+        )
+
     def test__simulator__check_if_progress_updates_are_received(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
@@ -304,10 +330,7 @@ class TestWorkflows(unittest.TestCase):
             submitted_job = submit_a_job(
                 omotes_client_, esdl_file, workflow_type, params_dict, result_handler
             )
-            result_handler.wait_until_result(timeout_seconds)
 
-        # Assert
-        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
         first_update = next(
             (update for update in result_handler.progress_updates if update.progress == 0.0), None
         )

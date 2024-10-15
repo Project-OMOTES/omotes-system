@@ -58,6 +58,7 @@ try:
 
     omotes_if.submit_job(
         esdl=input_esdl,
+        job_reference="example_sdk_client.optimizer",
         params_dict={"key1": "value1", "key2": ["just", "a", "list", "with", "an", "integer", 3]},
         workflow_type=workflow_optimizer,
         job_timeout=timedelta(hours=1),

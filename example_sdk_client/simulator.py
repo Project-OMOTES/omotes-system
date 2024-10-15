@@ -57,6 +57,7 @@ try:
 
     omotes_if.submit_job(
         esdl=input_esdl,
+        job_reference="example_sdk_client.simulator",
         params_dict={
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 2, 0, 0, 0),
