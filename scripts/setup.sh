@@ -15,10 +15,10 @@ $DOCKER_COMPOSE -f $DOCKER_COMPOSE_FILE --env-file $ENV_FILE --profile=manual_de
 # add postgres user with privileges
 $DOCKER_COMPOSE -f $DOCKER_COMPOSE_FILE --env-file $ENV_FILE up --wait orchestrator_postgres_db
 $DOCKER_COMPOSE -f $DOCKER_COMPOSE_FILE exec orchestrator_postgres_db psql \
-  -d postgres \
+  -d omotes_jobs \
   -v PG_USERNAME="$POSTGRES_ORCHESTRATOR_USER_NAME" \
   -v PG_PASSWORD="$POSTGRES_ORCHESTRATOR_USER_PASSWORD" \
-  -v PG_DB=postgres \
+  -v PG_DB=omotes_jobs \
   -f /setup/init.sql
 
 # add rabbitmq 'omotes' and 'celery' vhosts and users
