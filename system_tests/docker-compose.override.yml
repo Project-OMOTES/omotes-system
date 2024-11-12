@@ -16,3 +16,8 @@ services:
       RABBITMQ_VIRTUALHOST: omotes
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+
+  orchestrator:
+    environment:
+      TIMEOUT_JOB_MANAGER_START_BUFFER_SEC: 2
+      TIMEOUT_JOB_HANDLER_RERUN_SEC: 5
