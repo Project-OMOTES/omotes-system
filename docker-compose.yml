@@ -174,7 +174,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.13
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.14
     restart: unless-stopped
     deploy:
       replicas: 2
