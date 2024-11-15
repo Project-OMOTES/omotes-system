@@ -87,7 +87,7 @@ services:
       - manual_dev
 
   orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.0
+    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.1
     restart: unless-stopped
     networks:
       - omotes
@@ -174,7 +174,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.14
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.15
     restart: unless-stopped
     deploy:
       replicas: 2
