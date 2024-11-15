@@ -45,7 +45,9 @@ class OmotesJobHandler:
         self.result = None
 
     def wait_until_result(self, timeout: float | None = None):
-        self.has_result.wait(timeout)
+        assert self.has_result.wait(timeout), (
+            f"The result was not received within the " f"timeout {timeout} seconds."
+        )
 
     def handle_on_finished(self, _: Job, result: JobResult):
         self.has_result.set()
@@ -93,11 +95,12 @@ def submit_a_job(
     workflow_type: str,
     params_dict: ParamsDict,
     omotes_job_result_handler: OmotesJobHandler,
+    job_timeout: timedelta = timedelta(hours=1),
 ) -> Job:
     return omotes_client.submit_job(
         esdl=esdl_file,
         workflow_type=omotes_client.get_workflow_type_manager().get_workflow_by_name(workflow_type),
-        job_timeout=timedelta(hours=1),
+        job_timeout=job_timeout,
         params_dict=params_dict,
         callback_on_finished=omotes_job_result_handler.handle_on_finished,
         callback_on_progress_update=omotes_job_result_handler.handle_on_progress_update,
@@ -344,3 +347,37 @@ class TestWorkflows(unittest.TestCase):
         self.assertEqual(submitted_job.id, uuid.UUID(first_update.uuid))
         self.assertIsNotNone(last_update)
         self.assertEqual(submitted_job.id, uuid.UUID(last_update.uuid))
+
+    def test__simulator__job_timeout_working(self) -> None:
+        """This test depends on the environment variables:
+            TIMEOUT_JOB_MANAGER_START_BUFFER_SEC (currently set to 2 seconds)
+            TIMEOUT_JOB_HANDLER_RERUN_SEC (currently set to 5 seconds)
+
+        They are defined in system_tests/docker-compose.override.yml
+        """
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
+        workflow_type = "simulator"
+        job_timeout = timedelta(seconds=5)
+        result_timeout_seconds = 10.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
+            "end_time": datetime.datetime(2019, 2, 1, 0, 0, 0),
+        }
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submit_a_job(
+                omotes_client_,
+                esdl_file,
+                workflow_type,
+                params_dict,
+                result_handler,
+                job_timeout=job_timeout,
+            )
+            result_handler.wait_until_result(result_timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.CANCELLED)
