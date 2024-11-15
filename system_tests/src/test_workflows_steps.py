@@ -215,8 +215,8 @@ class TestWorkflows(unittest.TestCase):
         timeout_seconds = 60.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
-            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
-            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0, tzinfo=datetime.UTC),
         }
 
         # Act
@@ -364,7 +364,7 @@ class TestWorkflows(unittest.TestCase):
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
-            "end_time": datetime.datetime(2019, 2, 1, 0, 0, 0),
+            "end_time": datetime.datetime(2020, 1, 1, 0, 0, 0),
         }
 
         # Act
