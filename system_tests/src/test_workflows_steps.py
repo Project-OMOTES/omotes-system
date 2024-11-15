@@ -364,7 +364,7 @@ class TestWorkflows(unittest.TestCase):
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
-            "end_time": datetime.datetime(2019, 2, 1, 0, 0, 0),
+            "end_time": datetime.datetime(2019, 4, 1, 0, 0, 0),
         }
 
         # Act
