@@ -212,8 +212,8 @@ class TestWorkflows(unittest.TestCase):
         timeout_seconds = 60.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
-            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
-            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0, tzinfo=datetime.UTC),
         }
 
         # Act
@@ -223,6 +223,7 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        print(result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
