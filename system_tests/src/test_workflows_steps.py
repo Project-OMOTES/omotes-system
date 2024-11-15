@@ -223,7 +223,6 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        print(result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
