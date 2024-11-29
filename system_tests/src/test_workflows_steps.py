@@ -17,6 +17,7 @@ from omotes_sdk.omotes_interface import (
     JobProgressUpdate,
     JobStatusUpdate,
 )
+from omotes_sdk_protocol.job_pb2 import EsdlMessage
 import xmltodict
 from deepdiff import DeepDiff
 from omotes_sdk.types import ParamsDict
@@ -381,3 +382,37 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.CANCELLED)
+
+    def test__grow_optimizer_default__error_with_feedback_message(self) -> None:
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file(
+            "./test_esdl/input/optimizer_poc_tutorial_feedback_error.esdl"
+        )
+        workflow_type = "grow_optimizer_default"
+        timeout_seconds = 60.0
+        params_dict = {}
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.ERROR)
+
+        first_message = result_handler.result.esdl_messages[0]
+        self.assertEqual(
+            "Asset insufficient installed capacity: please increase the installed power or reduce the demand profile peak value of the demand(s) listed.",
+            first_message.technical_message,
+        )
+        self.assertEqual(EsdlMessage.Severity.ERROR, first_message.severity)
+        self.assertEqual("", first_message.esdl_object_id)
+
+        second_message = result_handler.result.esdl_messages[1]
+        self.assertEqual(
+            "Asset named HeatingDemand_b0ff: The installed capacity of 15.0MW should be larger than the maximum of the heat demand profile 32.208MW",
+            second_message.technical_message,
+        )
+        self.assertEqual(EsdlMessage.Severity.ERROR, second_message.severity)
+        self.assertEqual("b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c", second_message.esdl_object_id)
