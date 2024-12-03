@@ -23,6 +23,8 @@ def handle_on_finished(job: Job, result: JobResult):
     print("--------------ESDL:")
     print(result.output_esdl)
     print()
+    print("--------------ESDL messages:")
+    print(result.esdl_messages)
     print("--------------Result")
     print(
         f"Job {job.id} is done (type: {job.workflow_type.workflow_type_name}). "
