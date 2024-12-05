@@ -230,6 +230,40 @@ class TestWorkflows(unittest.TestCase):
         expected_esdl = retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
+    def test__simulator__multiple_ates_run(self) -> None:
+        """Test simulator by repeating the ATES run a number of times.
+
+        This is to ensure that the pyjnius binding in simulator-core works repeatedly.
+        We had issues where the pyjnius binding would hang indefinitely when used or wouldn't
+        properly function after using it once.
+        """
+        # Arrange
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_ates_short_run.esdl")
+        workflow_type = "simulator"
+        timeout_seconds = 60.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0, tzinfo=datetime.UTC),
+        }
+
+        # Act
+        result_handlers = [OmotesJobHandler() for _ in range(0, 4)]
+        with omotes_client() as omotes_client_:
+            for result_handler in result_handlers:
+                submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            for result_handler in result_handlers:
+                result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        expected_esdl = retrieve_esdl_file(
+            "./test_esdl/output/test__simulator__multiple_ates_run.esdl"
+        )
+
+        for result_handler in result_handlers:
+            self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+            self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
+
     def test__grow_optimizer_default__happy_path_1source(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
