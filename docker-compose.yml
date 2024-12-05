@@ -16,15 +16,15 @@ services:
     restart: unless-stopped
     volumes:
       - "broker-data:/var/lib/rabbitmq/"
-      - "./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf"
+      - "${RABBITMQ_CONF_FILE:-./rabbitmq/rabbitmq.conf}:/etc/rabbitmq/rabbitmq.conf"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_ROOT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_ROOT_PASSWORD}
       LOG_LEVEL: ${LOG_LEVEL}
     hostname: rabbitmq-nwn
     ports:
-      - '${RABBITMQ_PORT}:5672'
-      - '${RABBITMQ_MANAGEMENT_PORT}:15672'
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     networks:
       - omotes
     #      - mapeditor-net
@@ -51,9 +51,11 @@ services:
       INFLUXDB_HTTP_AUTH_ENABLED: true
       LOG_LEVEL: ${LOG_LEVEL}
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://omotes_influxdb:${INFLUXDB_PORT}/ping" ]
+      test:
+        ["CMD", "curl", "-f", "http://omotes_influxdb:${INFLUXDB_PORT}/ping"]
       interval: 10s
       timeout: 5s
+      retries: 10
     volumes:
       - influxdb_storage:/var/lib/influxdb
 
@@ -72,7 +74,15 @@ services:
 
       LOG_LEVEL: ${LOG_LEVEL}
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_ROOT_USER}", "-d", "omotes_jobs" ]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "${POSTGRES_ROOT_USER}",
+          "-d",
+          "omotes_jobs",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -92,7 +102,7 @@ services:
     networks:
       - omotes
     volumes:
-      - "${WORKFLOW_SETTINGS_FILE}:/config/workflow_config.json"
+      - "${WORKFLOW_SETTINGS_FILE:?}:/config/workflow_config.json"
     environment:
       CELERY_RABBITMQ_USERNAME: ${RABBITMQ_CELERY_USER_NAME}
       CELERY_RABBITMQ_PASSWORD: ${RABBITMQ_CELERY_USER_PASSWORD}
@@ -135,7 +145,7 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 4gb
     memswap_limit: 4gb
     networks:
@@ -183,7 +193,7 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 4gb
     memswap_limit: 4gb
     networks:
