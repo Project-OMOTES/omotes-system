@@ -1,29 +1,26 @@
 [
   {
-    "workflow_type_name": "grow_optimizer_default",
-    "workflow_type_description_name": "Grow Optimizer default workflow"
-  },
-  {
-    "workflow_type_name": "grow_simulator",
-    "workflow_type_description_name": "Grow Simulator"
-  },
-  {
     "workflow_type_name": "grow_optimizer_no_heat_losses",
-    "workflow_type_description_name": "Grow Optimizer without heat losses"
+    "workflow_type_description_name": "Draft Design - Quickscan Validation"
+  },
+  {
+    "workflow_type_name": "grow_optimizer_default",
+    "workflow_type_description_name": "Draft Design - Optimization"
   },
   {
     "workflow_type_name": "grow_optimizer_with_pressure",
-    "workflow_type_description_name": "Grow Optimizer with pump pressures"
+    "workflow_type_description_name": "Draft Design - Optimization with Pressure Drops"
   },
   {
     "workflow_type_name": "simulator",
-    "workflow_type_description_name": "High fidelity simulator",
+    "workflow_type_description_name": "Conceptual Design - Simulation",
     "workflow_parameters": [
       {
         "parameter_type": "duration",
         "key_name": "timestep",
         "description": "Duration of a timestep in seconds.",
-        "minimum": 0
+        "minimum": 0,
+        "default": 3600
       },
       {
         "parameter_type": "datetime",
