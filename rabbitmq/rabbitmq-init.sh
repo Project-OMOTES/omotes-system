@@ -1,3 +1,5 @@
+rabbitmqctl enable_feature_flag all
+
 rabbitmqctl add_vhost omotes;
 rabbitmqctl set_permissions --vhost omotes root ".*" ".*" ".*";
 rabbitmqctl add_vhost omotes_celery;
