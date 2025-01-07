@@ -12,7 +12,7 @@ volumes:
 
 services:
   rabbitmq:
-    image: rabbitmq:3.12-management
+    image: rabbitmq:4.0.5-management
     restart: unless-stopped
     volumes:
       - "broker-data:/var/lib/rabbitmq/"
