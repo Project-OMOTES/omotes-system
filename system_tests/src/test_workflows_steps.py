@@ -63,7 +63,7 @@ class OmotesJobHandler:
 
 @contextlib.contextmanager
 def omotes_client() -> OmotesInterface:
-    omotes_if = OmotesInterface(RABBITMQ_CONFIG, "system_test")
+    omotes_if = OmotesInterface(RABBITMQ_CONFIG, f"system_test_{uuid.uuid4()}")
     omotes_if.start()
     yield omotes_if
     omotes_if.stop()
