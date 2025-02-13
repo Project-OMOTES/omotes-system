@@ -8,10 +8,6 @@
     "workflow_type_description_name": "Draft Design - Optimization"
   },
   {
-    "workflow_type_name": "grow_optimizer_with_pressure",
-    "workflow_type_description_name": "Draft Design - Optimization with Pressure Drops"
-  },
-  {
     "workflow_type_name": "simulator",
     "workflow_type_description_name": "Conceptual Design - Simulation",
     "workflow_parameters": [

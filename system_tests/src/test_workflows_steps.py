@@ -63,7 +63,7 @@ class OmotesJobHandler:
 
 @contextlib.contextmanager
 def omotes_client() -> OmotesInterface:
-    omotes_if = OmotesInterface(RABBITMQ_CONFIG, "system_test")
+    omotes_if = OmotesInterface(RABBITMQ_CONFIG, f"system_test_{uuid.uuid4()}")
     omotes_if.start()
     yield omotes_if
     omotes_if.stop()
@@ -168,25 +168,25 @@ class TestWorkflows(unittest.TestCase):
         )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
-    def test__grow_optimizer_with_pressure__happy_path(self) -> None:
-        # Arrange
-        result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
-        workflow_type = "grow_optimizer_with_pressure"
-        timeout_seconds = 120.0
-        params_dict = {}
-
-        # Act
-        with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
-            result_handler.wait_until_result(timeout_seconds)
-
-        # Assert
-        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        expected_esdl = retrieve_esdl_file(
-            "./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl"
-        )
-        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
+    # def test__grow_optimizer_with_pressure__happy_path(self) -> None:
+    #     # Arrange
+    #     result_handler = OmotesJobHandler()
+    #     esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
+    #     workflow_type = "grow_optimizer_with_pressure"
+    #     timeout_seconds = 120.0
+    #     params_dict = {}
+    #
+    #     # Act
+    #     with omotes_client() as omotes_client_:
+    #         submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+    #         result_handler.wait_until_result(timeout_seconds)
+    #
+    #     # Assert
+    #     self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+    #     expected_esdl = retrieve_esdl_file(
+    #         "./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl"
+    #     )
+    #     self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__simulator__happy_path(self) -> None:
         # Arrange
