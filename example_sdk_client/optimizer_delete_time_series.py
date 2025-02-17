@@ -56,22 +56,43 @@ try:
         "grow_optimizer_default"
     )
 
-    with open("example_esdl_optimizer_poc_tutorial.esdl") as open_file:
-        input_esdl = open_file.read()
+    # with open("example_esdl_optimizer_poc_tutorial.esdl") as open_file:
+    #     input_esdl = open_file.read()
 
-    job = omotes_if.submit_job(
-        esdl=input_esdl,
-        job_reference="example_sdk_client.optimizer_cancel",
-        params_dict={"key1": "value1", "key2": ["just", "a", "list", "with", "an", "integer", 3]},
-        workflow_type=workflow_optimizer,
-        job_timeout=timedelta(hours=1),
-        callback_on_finished=handle_on_finished,
-        callback_on_progress_update=handle_on_progress_update,
-        callback_on_status_update=handle_on_status_update,
-        auto_disconnect_on_result=True,
-    )
-    time.sleep(1)
-    omotes_if.cancel_job(job)
-    STOP_EVENT.wait()
+    # job = omotes_if.submit_job(
+    #     esdl=input_esdl,
+    #     job_reference="example_sdk_client.optimizer_cancel",
+    #     params_dict={"key1": "value1", "key2": ["just", "a", "list", "with", "an", "integer", 3]},
+    #     workflow_type=workflow_optimizer,
+    #     job_timeout=timedelta(hours=1),
+    #     callback_on_finished=handle_on_finished,
+    #     callback_on_progress_update=handle_on_progress_update,
+    #     callback_on_status_update=handle_on_status_update,
+    #     auto_disconnect_on_result=True,
+    # )
+    # time.sleep(8)
+    # omotes_if.cancel_job(job)
+
+    # omotes_if.delete_time_series_data("be694ac2-b680-4ad2-bffc-53b7cab250e4")
+    job = Job(id=uuid.UUID("059437a2-9914-4903-813b-06af42481b9e"), workflow_type=workflow_optimizer)
+    omotes_if.delete_job(job)
+
+    # STOP_EVENT.wait()
+
+    # from influxdb import InfluxDBClient
+    # influxdb_client = InfluxDBClient(
+    #     host="localhost",
+    #     port=8096,
+    #     database="omotes_timeseries",
+    #     username="root",
+    #     password="9012",
+    # )
+    # output_esdl_id = "9535dca4-9cd6-44c7-8ce4-d1634d7da102"
+    # stmnt = f'SELECT sum("diskBytes") FROM "_internal".."tsm1_filestore" WHERE "database"=\'{output_esdl_id}\''
+    # result = influxdb_client.query(stmnt)
+    # print(f"RESULT: {result}")
+    # first_key = next(result.get_points())
+    # print(f"FK: {first_key}")
+    # print(f"SIZE {round(next(result.get_points())['sum'] / 1e6, 3)}")
 finally:
     omotes_if.stop()

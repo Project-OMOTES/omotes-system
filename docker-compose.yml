@@ -2,8 +2,8 @@ networks:
   omotes:
     driver: bridge
     name: omotes
-#  mapeditor-net:
-#    external: true
+  mapeditor-net:
+    external: true
 
 volumes:
   db-data:
@@ -27,7 +27,7 @@ services:
       - "${RABBITMQ_MANAGEMENT_PORT}:15672"
     networks:
       - omotes
-    #      - mapeditor-net
+      - mapeditor-net
     healthcheck:
       test: rabbitmq-diagnostics -q listeners --node rabbit@rabbitmq-nwn
       interval: 10s
@@ -41,7 +41,7 @@ services:
       - "${INFLUXDB_RPC_PORT}:${INFLUXDB_RPC_PORT}"
     networks:
       - omotes
-    #      - mapeditor-net
+      - mapeditor-net
     environment:
       INFLUXDB_ADMIN_USER: ${INFLUXDB_ADMIN_USER}
       INFLUXDB_ADMIN_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
@@ -128,6 +128,14 @@ services:
       POSTGRESQL_USERNAME: ${POSTGRES_ORCHESTRATOR_USER_NAME}
       POSTGRESQL_PASSWORD: ${POSTGRES_ORCHESTRATOR_USER_PASSWORD}
 
+      INFLUXDB_HOST: omotes_influxdb
+      INFLUXDB_PORT: 8096
+      INFLUXDB_DATABASE: omotes_timeseries
+      INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
+      INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
+
+      FJOB_RETENTION_SEC: ${JOB_RETENTION_SEC}
+
       TIMEOUT_JOB_MANAGER_START_BUFFER_SEC: ${TIMEOUT_JOB_MANAGER_START_BUFFER_SEC}
       TIMEOUT_JOB_HANDLER_RERUN_SEC: ${TIMEOUT_JOB_HANDLER_RERUN_SEC}
 
@@ -136,6 +144,8 @@ services:
       rabbitmq:
         condition: service_healthy
       orchestrator_postgres_db:
+        condition: service_healthy
+      omotes_influxdb:
         condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
@@ -187,7 +197,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.17
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.22
     restart: unless-stopped
     deploy:
       replicas: 2

@@ -11,7 +11,7 @@ from omotes_sdk.omotes_interface import (
     JobStatusUpdate,
 )
 
-rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
+rabbitmq_config = RabbitMQConfig(port=5673, username="omotes", password="somepass1", virtual_host="omotes")
 STOP_EVENT = threading.Event()
 
 
@@ -52,7 +52,7 @@ try:
     omotes_if.start()
 
     workflow_optimizer = omotes_if.get_workflow_type_manager().get_workflow_by_name(
-        "grow_optimizer_default"
+        "grow_optimizer_with_pressure"
     )
 
     with open("example_esdl_optimizer_poc_tutorial.esdl") as open_file:
