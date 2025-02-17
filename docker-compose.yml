@@ -97,7 +97,7 @@ services:
       - manual_dev
 
   orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.2
+    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.3
     restart: unless-stopped
     networks:
       - omotes
@@ -128,16 +128,15 @@ services:
       POSTGRESQL_USERNAME: ${POSTGRES_ORCHESTRATOR_USER_NAME}
       POSTGRESQL_PASSWORD: ${POSTGRES_ORCHESTRATOR_USER_PASSWORD}
 
-      INFLUXDB_HOST: omotes_influxdb
-      INFLUXDB_PORT: 8096
-      INFLUXDB_DATABASE: omotes_timeseries
-      INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
-      INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
-
-      FJOB_RETENTION_SEC: ${JOB_RETENTION_SEC}
-
       TIMEOUT_JOB_MANAGER_START_BUFFER_SEC: ${TIMEOUT_JOB_MANAGER_START_BUFFER_SEC}
       TIMEOUT_JOB_HANDLER_RERUN_SEC: ${TIMEOUT_JOB_HANDLER_RERUN_SEC}
+
+      INFLUXDB_HOST: omotes_influxdb
+      INFLUXDB_PORT: ${INFLUXDB_PORT}
+      INFLUXDB_USERNAME: ${INFLUXDB_FRONTEND_ADMIN_USER}
+      INFLUXDB_PASSWORD: ${INFLUXDB_FRONTEND_ADMIN_USER_PASSWORD}
+
+      JOB_RETENTION_SEC: 172800
 
       LOG_LEVEL: ${LOG_LEVEL}
     depends_on:
@@ -197,7 +196,7 @@ services:
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.22
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.23
     restart: unless-stopped
     deploy:
       replicas: 2
