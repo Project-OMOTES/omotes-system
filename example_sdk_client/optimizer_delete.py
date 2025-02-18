@@ -70,8 +70,8 @@ try:
         callback_on_status_update=handle_on_status_update,
         auto_disconnect_on_result=True,
     )
-    time.sleep(1)
-    omotes_if.cancel_job(job)
+    time.sleep(8)
+    omotes_if.delete_job(job)
     STOP_EVENT.wait()
 finally:
     omotes_if.stop()
