@@ -8,6 +8,11 @@ import uuid
 from datetime import timedelta
 from pathlib import Path
 from pprint import pformat
+from time import sleep
+from typing import Any
+import psycopg
+from psycopg.rows import dict_row
+from influxdb import InfluxDBClient
 
 from omotes_sdk.config import RabbitMQConfig
 from omotes_sdk.omotes_interface import (
@@ -31,6 +36,21 @@ RABBITMQ_CONFIG = RabbitMQConfig(
     host=os.environ.get("RABBITMQ_HOST", "localhost"),
     port=int(os.environ.get("RABBITMQ_PORT", "5672")),
 )
+
+SQL_CONFIG = {
+    "host": "orchestrator_postgres_db",
+    "port": 5432,
+    "database": "omotes_jobs",
+    "username": os.environ.get("POSTGRES_ORCHESTRATOR_USER_NAME", "omotes_orchestrator"),
+    "password": os.environ.get("POSTGRES_ORCHESTRATOR_USER_PASSWORD", "somepass3"),
+}
+
+INFLUXDB_CONFIG = {
+    "host": "omotes_influxdb",
+    "port": 8096,
+    "username": os.environ.get("INFLUXDB_ADMIN_USER", "root"),
+    "password": os.environ.get("INFLUXDB_ADMIN_PASSWORD", "9012"),
+}
 
 
 class OmotesJobHandler:
@@ -68,7 +88,6 @@ def omotes_client() -> OmotesInterface:
     yield omotes_if
     omotes_if.stop()
 
-
 def retrieve_esdl_file(path_str: str) -> str:
     path = Path(path_str)
 
@@ -79,16 +98,13 @@ def retrieve_esdl_file(path_str: str) -> str:
 
     return esdl_file
 
-
 ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
 DATABASE_PATTERN = re.compile(r"database=\"[a-z0-9-]+\"")
-
 
 def normalize_esdl(esdl: str) -> dict:
     esdl_normalized = ID_PATTERN.sub('id=""', esdl)
     esdl_normalized = DATABASE_PATTERN.sub('database=""', esdl_normalized)
     return xmltodict.parse(esdl_normalized)
-
 
 def submit_a_job(
     omotes_client: OmotesInterface,
@@ -108,6 +124,45 @@ def submit_a_job(
         callback_on_status_update=omotes_job_result_handler.handle_on_status_update,
         auto_disconnect_on_result=True,
     )
+
+def get_sql_esdl_time_series_info(job_id) -> Any:
+    conn_str = (f"postgresql://{SQL_CONFIG['username']}:{SQL_CONFIG['password']}"
+                f"@{SQL_CONFIG['host']}:{SQL_CONFIG['port']}/{SQL_CONFIG['database']}")
+
+    with psycopg.connect(conninfo=conn_str, row_factory=dict_row) as conn:
+        with conn.cursor() as cur:
+            query = "SELECT * FROM esdl_time_series_info WHERE job_id = %s"
+            cur.execute(query, (job_id,))
+            return cur.fetchone()
+
+
+class InfluxDBConnection:
+    def __init__(self, host, port, username, password, database=None):
+        self.client = InfluxDBClient(
+            host=host, port=port, username=username, password=password, database=database
+        )
+
+    def __enter__(self):
+        return self.client
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.client.close()
+
+def assert_influxdb_database_existence(output_esdl: str, should_exist: bool) -> None:
+    output_esh = esdl.esdl_handler.EnergySystemHandler()
+    output_esh.load_from_string(output_esdl)
+    db_name = output_esh.energy_system.id
+    print(f"DB NAME: {db_name}")
+    with InfluxDBConnection(
+            host=INFLUXDB_CONFIG["host"],
+            port=INFLUXDB_CONFIG["port"],
+            username=INFLUXDB_CONFIG["username"],
+            password=INFLUXDB_CONFIG["password"],
+    ) as client:
+        databases = client.get_list_database()
+        db_exists = any(db["name"] == db_name for db in databases)
+
+        assert db_exists is should_exist
 
 
 class TestWorkflows(unittest.TestCase):
@@ -202,13 +257,19 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submitted_job = submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
         expected_esdl = retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
+
+        # assert time series data created
+        assert_influxdb_database_existence(result_handler.result.output_esdl, True)
+        sql_esdl_time_series_info = get_sql_esdl_time_series_info(submitted_job.id)
+        self.assertEqual(sql_esdl_time_series_info["job_id"], submitted_job.id)
+        assert sql_esdl_time_series_info["deactivated_at"] is None
 
     def test__simulator__multiple_ates_run(self) -> None:
         """Test simulator by repeating the ATES run a number of times.
@@ -430,3 +491,70 @@ class TestWorkflows(unittest.TestCase):
         )
         self.assertEqual(EsdlMessage.Severity.ERROR, second_message.severity)
         self.assertEqual("b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c", second_message.esdl_object_id)
+
+    def test__simulator__job_delete_while_running_working(self) -> None:
+        """This test depends on the environment variable:
+            JOB_RETENTION_SEC (currently set to 10 seconds)
+
+        It is defined in system_tests/docker-compose.override.yml
+        """
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
+        workflow_type = "simulator"
+        timeout_seconds = 60.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+        }
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submitted_job = submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            sleep(1)
+            omotes_client_.delete_job(submitted_job)
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.CANCELLED)
+
+        # wait for time series manager to clean up (need two 10-second cycles)
+        sleep(30)
+
+        assert get_sql_esdl_time_series_info(submitted_job.id) is None
+
+    def test__simulator__delete_time_series_data_after_run(self) -> None:
+        """This test depends on the environment variable:
+            JOB_RETENTION_SEC (currently set to 10 seconds)
+
+        It is defined in system_tests/docker-compose.override.yml
+        """
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
+        workflow_type = "simulator"
+        timeout_seconds = 60.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0, tzinfo=datetime.UTC),
+        }
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submitted_job = submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            result_handler.wait_until_result(timeout_seconds)
+            sleep(1)
+            omotes_client_.delete_job(submitted_job)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        output_esdl = result_handler.result.output_esdl
+
+        # wait for time series manager to clean up (need two 10-second cycles)
+        sleep(30)
+
+        # assert time series data deleted
+        assert_influxdb_database_existence(output_esdl, False)
+        assert get_sql_esdl_time_series_info(submitted_job.id) is None

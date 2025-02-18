@@ -21,3 +21,8 @@ services:
     environment:
       TIMEOUT_JOB_MANAGER_START_BUFFER_SEC: 2
       TIMEOUT_JOB_HANDLER_RERUN_SEC: 5
+      JOB_RETENTION_SEC: 10
+
+  orchestrator_postgres_db:
+    ports:
+      - "${POSTGRES_DEV_PORT}:5432"
