@@ -136,13 +136,15 @@ services:
       INFLUXDB_USERNAME: ${INFLUXDB_FRONTEND_ADMIN_USER}
       INFLUXDB_PASSWORD: ${INFLUXDB_FRONTEND_ADMIN_USER_PASSWORD}
 
-      JOB_RETENTION_SEC: 172800
+      JOB_RETENTION_SEC: ${JOB_RETENTION_SEC}
 
       LOG_LEVEL: ${LOG_LEVEL}
     depends_on:
       rabbitmq:
         condition: service_healthy
       orchestrator_postgres_db:
+        condition: service_healthy
+      omotes_influxdb:
         condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
