@@ -38,15 +38,15 @@ RABBITMQ_CONFIG = RabbitMQConfig(
 )
 
 SQL_CONFIG = {
-    "host": "orchestrator_postgres_db",
-    "port": 5432,
+    "host": os.environ.get("POSTGRES_HOST", "orchestrator_postgres_db"),
+    "port": int(os.environ.get("POSTGRES_PORT", "5432")),
     "database": "omotes_jobs",
     "username": os.environ.get("POSTGRES_ORCHESTRATOR_USER_NAME", "omotes_orchestrator"),
     "password": os.environ.get("POSTGRES_ORCHESTRATOR_USER_PASSWORD", "somepass3"),
 }
 
 INFLUXDB_CONFIG = {
-    "host": "omotes_influxdb",
+    "host": os.environ.get("INFLUXDB_HOST", "omotes_influxdb"),
     "port": 8096,
     "username": os.environ.get("INFLUXDB_ADMIN_USER", "root"),
     "password": os.environ.get("INFLUXDB_ADMIN_PASSWORD", "9012"),
@@ -85,8 +85,11 @@ class OmotesJobHandler:
 def omotes_client() -> OmotesInterface:
     omotes_if = OmotesInterface(RABBITMQ_CONFIG, f"system_test_{uuid.uuid4()}")
     omotes_if.start()
-    yield omotes_if
-    omotes_if.stop()
+    try:
+        yield omotes_if
+    finally:
+        omotes_if.stop()
+
 
 def retrieve_esdl_file(path_str: str) -> str:
     path = Path(path_str)
@@ -98,13 +101,16 @@ def retrieve_esdl_file(path_str: str) -> str:
 
     return esdl_file
 
+
 ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
 DATABASE_PATTERN = re.compile(r"database=\"[a-z0-9-]+\"")
+
 
 def normalize_esdl(esdl: str) -> dict:
     esdl_normalized = ID_PATTERN.sub('id=""', esdl)
     esdl_normalized = DATABASE_PATTERN.sub('database=""', esdl_normalized)
     return xmltodict.parse(esdl_normalized)
+
 
 def submit_a_job(
     omotes_client: OmotesInterface,
@@ -125,9 +131,12 @@ def submit_a_job(
         auto_disconnect_on_result=True,
     )
 
+
 def get_sql_esdl_time_series_info(job_id) -> Any:
-    conn_str = (f"postgresql://{SQL_CONFIG['username']}:{SQL_CONFIG['password']}"
-                f"@{SQL_CONFIG['host']}:{SQL_CONFIG['port']}/{SQL_CONFIG['database']}")
+    conn_str = (
+        f"postgresql://{SQL_CONFIG['username']}:{SQL_CONFIG['password']}"
+        f"@{SQL_CONFIG['host']}:{SQL_CONFIG['port']}/{SQL_CONFIG['database']}"
+    )
 
     with psycopg.connect(conninfo=conn_str, row_factory=dict_row) as conn:
         with conn.cursor() as cur:
@@ -148,16 +157,17 @@ class InfluxDBConnection:
     def __exit__(self, exc_type, exc_value, traceback):
         self.client.close()
 
+
 def assert_influxdb_database_existence(output_esdl: str, should_exist: bool) -> None:
     output_esh = esdl.esdl_handler.EnergySystemHandler()
     output_esh.load_from_string(output_esdl)
     db_name = output_esh.energy_system.id
     print(f"DB NAME: {db_name}")
     with InfluxDBConnection(
-            host=INFLUXDB_CONFIG["host"],
-            port=INFLUXDB_CONFIG["port"],
-            username=INFLUXDB_CONFIG["username"],
-            password=INFLUXDB_CONFIG["password"],
+        host=INFLUXDB_CONFIG["host"],
+        port=INFLUXDB_CONFIG["port"],
+        username=INFLUXDB_CONFIG["username"],
+        password=INFLUXDB_CONFIG["password"],
     ) as client:
         databases = client.get_list_database()
         db_exists = any(db["name"] == db_name for db in databases)
@@ -257,7 +267,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submitted_job = submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submitted_job = submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -511,7 +523,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submitted_job = submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submitted_job = submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             sleep(1)
             omotes_client_.delete_job(submitted_job)
             result_handler.wait_until_result(timeout_seconds)
@@ -543,7 +557,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submitted_job = submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submitted_job = submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
             sleep(1)
             omotes_client_.delete_job(submitted_job)
