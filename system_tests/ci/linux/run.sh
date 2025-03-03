@@ -5,4 +5,5 @@ if [[ "$OSTYPE" != "win32" && "$OSTYPE" != "msys" ]]; then
   . .venv/bin/activate
 fi
 cd src/
-pytest --timeout 120
+
+POSTGRES_PORT="6432"  POSTGRES_HOST="localhost" INFLUXDB_HOST="localhost" pytest --timeout 120
