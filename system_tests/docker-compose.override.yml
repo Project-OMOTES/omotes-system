@@ -17,6 +17,15 @@ services:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
 
+      POSTGRES_HOST: orchestrator_postgres_db
+      POSTGRES_PORT: 5432
+      POSTGRES_ORCHESTRATOR_USER_NAME: omotes_orchestrator
+      POSTGRES_ORCHESTRATOR_USER_PASSWORD: somepass3
+
+      INFLUXDB_HOST: omotes_influxdb
+      INFLUXDB_ADMIN_USER: root
+      INFLUXDB_ADMIN_PASSWORD: 9012
+
   orchestrator:
     environment:
       TIMEOUT_JOB_MANAGER_START_BUFFER_SEC: 2

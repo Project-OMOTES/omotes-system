@@ -22,7 +22,7 @@ from omotes_sdk.omotes_interface import (
     JobProgressUpdate,
     JobStatusUpdate,
 )
-from omotes_sdk_protocol.job_pb2 import EsdlMessage
+from omotes_sdk_protocol.job_pb2 import EsdlMessage, JobSubmission
 import xmltodict
 from deepdiff import DeepDiff
 from omotes_sdk.types import ParamsDict
@@ -34,19 +34,21 @@ RABBITMQ_CONFIG = RabbitMQConfig(
     password=os.environ.get("RABBITMQ_PASSWORD", "somepass1"),
     virtual_host=os.environ.get("RABBITMQ_VIRTUALHOST", "omotes"),
     host=os.environ.get("RABBITMQ_HOST", "localhost"),
-    port=int(os.environ.get("RABBITMQ_PORT", "5672")),
+    port=int(os.environ.get("RABBITMQ_PORT", "5673")),
 )
 
 SQL_CONFIG = {
-    "host": os.environ.get("POSTGRES_HOST", "orchestrator_postgres_db"),
-    "port": int(os.environ.get("POSTGRES_PORT", "5432")),
+    "host": os.environ.get("POSTGRES_HOST", "localhost"),
+    "port": int(os.environ.get("POSTGRES_PORT", "6432")),
     "database": "omotes_jobs",
-    "username": os.environ.get("POSTGRES_ORCHESTRATOR_USER_NAME", "omotes_orchestrator"),
+    "username": os.environ.get(
+        "POSTGRES_ORCHESTRATOR_USER_NAME", "omotes_orchestrator"
+    ),
     "password": os.environ.get("POSTGRES_ORCHESTRATOR_USER_PASSWORD", "somepass3"),
 }
 
 INFLUXDB_CONFIG = {
-    "host": os.environ.get("INFLUXDB_HOST", "omotes_influxdb"),
+    "host": os.environ.get("INFLUXDB_HOST", "localhost"),
     "port": 8096,
     "username": os.environ.get("INFLUXDB_ADMIN_USER", "root"),
     "password": os.environ.get("INFLUXDB_ADMIN_PASSWORD", "9012"),
@@ -119,16 +121,20 @@ def submit_a_job(
     params_dict: ParamsDict,
     omotes_job_result_handler: OmotesJobHandler,
     job_timeout: timedelta = timedelta(hours=1),
+    job_priority: JobSubmission.JobPriority = JobSubmission.JobPriority.LOW,
 ) -> Job:
     return omotes_client.submit_job(
         esdl=esdl_file,
-        workflow_type=omotes_client.get_workflow_type_manager().get_workflow_by_name(workflow_type),
+        workflow_type=omotes_client.get_workflow_type_manager().get_workflow_by_name(
+            workflow_type
+        ),
         job_timeout=job_timeout,
         params_dict=params_dict,
         callback_on_finished=omotes_job_result_handler.handle_on_finished,
         callback_on_progress_update=omotes_job_result_handler.handle_on_progress_update,
         callback_on_status_update=omotes_job_result_handler.handle_on_status_update,
         auto_disconnect_on_result=True,
+        job_priority=job_priority,
     )
 
 
@@ -148,7 +154,11 @@ def get_sql_esdl_time_series_info(job_id) -> Any:
 class InfluxDBConnection:
     def __init__(self, host, port, username, password, database=None):
         self.client = InfluxDBClient(
-            host=host, port=port, username=username, password=password, database=database
+            host=host,
+            port=port,
+            username=username,
+            password=password,
+            database=database,
         )
 
     def __enter__(self):
@@ -177,21 +187,27 @@ def assert_influxdb_database_existence(output_esdl: str, should_exist: bool) -> 
 
 class TestWorkflows(unittest.TestCase):
     def expect_a_result(
-        self, omotes_job_result_handler: OmotesJobHandler, expected_result: JobResult.ResultType
+        self,
+        omotes_job_result_handler: OmotesJobHandler,
+        expected_result: JobResult.ResultType,
     ):
         result = omotes_job_result_handler.result
         if not result.result_type == expected_result:
             print(result.output_esdl)
             print("-------------------------------------------")
             print(result.logs)
-            self.fail(f"The job did not finish as {expected_result}. Found {result.result_type}")
+            self.fail(
+                f"The job did not finish as {expected_result}. Found {result.result_type}"
+            )
 
     def compare_esdl(self, expected_esdl: str, result_esdl: str) -> None:
         expected = normalize_esdl(expected_esdl)
         result = normalize_esdl(result_esdl)
         diff_msg = pformat(DeepDiff(expected, result))
 
-        self.assertEqual(expected, result, msg=f"Found the following differences:\n{diff_msg}")
+        self.assertEqual(
+            expected, result, msg=f"Found the following differences:\n{diff_msg}"
+        )
 
     def test__grow_optimizer_default__happy_path(self) -> None:
         # Arrange
@@ -203,7 +219,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -223,7 +241,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -274,7 +294,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-        expected_esdl = retrieve_esdl_file("./test_esdl/output/test__simulator__happy_path.esdl")
+        expected_esdl = retrieve_esdl_file(
+            "./test_esdl/output/test__simulator__happy_path.esdl"
+        )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
         # assert time series data created
@@ -291,7 +313,9 @@ class TestWorkflows(unittest.TestCase):
         properly function after using it once.
         """
         # Arrange
-        esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_ates_short_run.esdl")
+        esdl_file = retrieve_esdl_file(
+            "./test_esdl/input/simulator_ates_short_run.esdl"
+        )
         workflow_type = "simulator"
         timeout_seconds = 60.0
         params_dict = {
@@ -304,7 +328,13 @@ class TestWorkflows(unittest.TestCase):
         result_handlers = [OmotesJobHandler() for _ in range(0, 4)]
         with omotes_client() as omotes_client_:
             for result_handler in result_handlers:
-                submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+                submit_a_job(
+                    omotes_client_,
+                    esdl_file,
+                    workflow_type,
+                    params_dict,
+                    result_handler,
+                )
             for result_handler in result_handlers:
                 result_handler.wait_until_result(timeout_seconds)
 
@@ -320,14 +350,18 @@ class TestWorkflows(unittest.TestCase):
     def test__grow_optimizer_default__happy_path_1source(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_1source.esdl")
+        esdl_file = retrieve_esdl_file(
+            "./test_esdl/input/optimizer_poc_tutorial_1source.esdl"
+        )
         workflow_type = "grow_optimizer_default"
         timeout_seconds = 60.0
         params_dict = {}
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -340,14 +374,18 @@ class TestWorkflows(unittest.TestCase):
     def test__grow_optimizer_default__happy_path_2ndsource(self) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
-        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial_2ndsource.esdl")
+        esdl_file = retrieve_esdl_file(
+            "./test_esdl/input/optimizer_poc_tutorial_2ndsource.esdl"
+        )
         workflow_type = "grow_optimizer_default"
         timeout_seconds = 60.0
         params_dict = {}
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -357,7 +395,9 @@ class TestWorkflows(unittest.TestCase):
         )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
-    def test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped(self) -> None:
+    def test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped(
+        self,
+    ) -> None:
         # Arrange
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file(
@@ -369,7 +409,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -393,7 +435,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -401,7 +445,8 @@ class TestWorkflows(unittest.TestCase):
         output_esh = esdl.esdl_handler.EnergySystemHandler()
         output_esh.load_from_string(result_handler.result.output_esdl)
         self.assertEqual(
-            output_esh.energy_system.name, "Untitled EnergySystem with return network_simulator"
+            output_esh.energy_system.name,
+            "Untitled EnergySystem with return network_simulator",
         )
 
     def test__simulator__check_if_progress_updates_are_received(self) -> None:
@@ -426,10 +471,20 @@ class TestWorkflows(unittest.TestCase):
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
         first_update = next(
-            (update for update in result_handler.progress_updates if update.progress == 0.0), None
+            (
+                update
+                for update in result_handler.progress_updates
+                if update.progress == 0.0
+            ),
+            None,
         )
         last_update = next(
-            (update for update in result_handler.progress_updates if update.progress == 1.0), None
+            (
+                update
+                for update in result_handler.progress_updates
+                if update.progress == 1.0
+            ),
+            None,
         )
         self.assertIsNotNone(first_update)
         self.assertEqual(submitted_job.id, uuid.UUID(first_update.uuid))
@@ -482,7 +537,9 @@ class TestWorkflows(unittest.TestCase):
 
         # Act
         with omotes_client() as omotes_client_:
-            submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
             result_handler.wait_until_result(timeout_seconds)
 
         # Assert
@@ -502,7 +559,9 @@ class TestWorkflows(unittest.TestCase):
             second_message.technical_message,
         )
         self.assertEqual(EsdlMessage.Severity.ERROR, second_message.severity)
-        self.assertEqual("b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c", second_message.esdl_object_id)
+        self.assertEqual(
+            "b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c", second_message.esdl_object_id
+        )
 
     def test__simulator__job_delete_while_running_working(self) -> None:
         """This test depends on the environment variable:
@@ -574,3 +633,85 @@ class TestWorkflows(unittest.TestCase):
         # assert time series data deleted
         assert_influxdb_database_existence(output_esdl, False)
         assert get_sql_esdl_time_series_info(submitted_job.id) is None
+
+    def test__grow_optimizer__high_priority_job_runs_before_other_jobs(self) -> None:
+        """This test submits 4 normal jobs followed by 1 high priority job.
+
+        The 4 normal jobs are needed to ensure that the high priority job finishes before
+        at least one of the previously committed jobs, with two active workers: two jobs
+        start immediately, followed by a race between the next two jobs.
+        NOTE: this number needs to be increased when the number of workers is increased
+              (for instance due to the creation of a general mesido worker).
+        """
+        # Arrange
+        esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
+        workflow_type = "grow_optimizer_no_heat_losses"
+        params_dict = {}
+        timeout_seconds = 200.0
+
+        job_handlers: dict[uuid.UUID, OmotesJobHandler] = {}
+        ordered_job_result_ids = []
+
+        def wait_for_all_jobs(timeout_seconds: float) -> None:
+            condition = threading.Condition()
+
+            def _watch_job(result_handler: OmotesJobHandler):
+                result_handler.wait_until_result(timeout_seconds)
+                ordered_job_result_ids.append(result_handler.result.uuid)
+                with condition:
+                    condition.notify_all()
+
+            # watch all jobs
+            for job_handler in job_handlers.values():
+                threading.Thread(
+                    target=_watch_job, args=(job_handler,), daemon=True
+                ).start()
+
+            # block until all jobs received a result
+            with condition:
+                assert condition.wait_for(
+                    lambda: all(
+                        job_handler.has_result.is_set()
+                        for job_handler in job_handlers.values()
+                    ),
+                    timeout_seconds,
+                ), (
+                    f"The result was not received within the "
+                    f"timeout {timeout_seconds} seconds."
+                )
+
+        # Act
+        with omotes_client() as omotes_client_:
+            # submit 4 low priority jobs
+            for _ in range(4):
+                result_handler = OmotesJobHandler()
+                submitted_job = submit_a_job(
+                    omotes_client_,
+                    esdl_file,
+                    workflow_type,
+                    params_dict,
+                    result_handler,
+                )
+                job_handlers[submitted_job.id] = result_handler
+
+            sleep(1)  # make sure jobs are submitted
+
+            # submit high priority job
+            result_handler = OmotesJobHandler()
+            high_priority_job = submit_a_job(
+                omotes_client_,
+                esdl_file,
+                workflow_type,
+                params_dict,
+                result_handler,
+                job_priority=JobSubmission.JobPriority.HIGH,
+            )
+            job_handlers[high_priority_job.id] = result_handler
+
+            wait_for_all_jobs(timeout_seconds)
+
+        # Assert
+        # check if high priority job ran successfully
+        self.assertTrue(str(high_priority_job.id) in ordered_job_result_ids)
+        # check that high priority job result was not last (exact order may vary)
+        self.assertNotEqual(str(high_priority_job.id), ordered_job_result_ids[-1])
