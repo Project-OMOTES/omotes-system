@@ -651,13 +651,15 @@ class TestWorkflows(unittest.TestCase):
 
         job_handlers: dict[uuid.UUID, OmotesJobHandler] = {}
         ordered_job_result_ids = []
+        result_ids_lock = threading.Lock()
 
         def wait_for_all_jobs(timeout_seconds: float) -> None:
             condition = threading.Condition()
 
             def _watch_job(result_handler: OmotesJobHandler):
                 result_handler.wait_until_result(timeout_seconds)
-                ordered_job_result_ids.append(result_handler.result.uuid)
+                with result_ids_lock:
+                    ordered_job_result_ids.append(result_handler.result.uuid)
                 with condition:
                     condition.notify_all()
 
