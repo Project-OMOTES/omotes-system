@@ -1,9 +1,9 @@
-omotes-sdk-python==4.1.0
+omotes-sdk-python==4.2.1
 pytest ~= 8.1.2
 pytest-timeout
 xmltodict ~= 0.13.0
 pip-tools
 deepdiff ~= 7.0
-pyesdl ~= 24.2
+pyesdl ~= 25.5.1
 psycopg[binary,pool] ~= 3.2.1
 influxdb ~= 5.3
