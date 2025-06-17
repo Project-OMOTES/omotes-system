@@ -8,6 +8,14 @@
     "workflow_type_description_name": "Draft Design - Optimization"
   },
   {
+    "workflow_type_name": "grow_optimizer_no_heat_losses_gurobi",
+    "workflow_type_description_name": "Draft Design - Quickscan Validation - Gurobi"
+  },
+  {
+    "workflow_type_name": "grow_optimizer_default_gurobi",
+    "workflow_type_description_name": "Draft Design - Optimization - Gurobi"
+  },
+  {
     "workflow_type_name": "simulator",
     "workflow_type_description_name": "Conceptual Design - Simulation",
     "workflow_parameters": [

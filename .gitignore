@@ -220,3 +220,4 @@ fabric.properties
 
 unit_test_coverage/
 .env.test
+gurobi/
