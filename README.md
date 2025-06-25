@@ -32,6 +32,9 @@ license.
 
 ### Start infrastructure
 
+> **_NOTE:_**  Docker can give an error while getting images which can be solved by running
+`export DOCKER_API_VERSION=1.50` first.
+
 To set up the infrastructure components (for windows run in `Git Bash`):
 
 ```
