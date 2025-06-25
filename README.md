@@ -24,9 +24,18 @@ the `string`, `boolean`, `integer`, `float` and `datetime` parameter formats.
 Set the environment variable `WORKFLOW_SETTINGS_FILE` to the file to be used by the orchestrator,
 which will pass the workflows definitions to the sdk.
 
+#### Gurobi license
+
+When using the `grow_worker_gurobi` a gurobi WLS license should be available under `gurobi/gurobi.lic`. This `gurobi/`
+folder is ignored by git. Set the number of replicas of this worker to the amount of allowed concurrent sessions in the
+license.
+
 ### Start infrastructure
 
-To setup the infrastructure components (for windows run in `Git Bash`):
+> **_NOTE:_**  Docker can give an error while getting images which can be solved by running
+`export DOCKER_API_VERSION=1.50` first.
+
+To set up the infrastructure components (for windows run in `Git Bash`):
 
 ```
 ./scripts/setup.sh
