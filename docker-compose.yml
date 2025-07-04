@@ -57,6 +57,7 @@ services:
       timeout: 5s
       retries: 10
     volumes:
+      - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
       - influxdb_storage:/var/lib/influxdb
 
   orchestrator_postgres_db: &orchestrator_postgres_db
