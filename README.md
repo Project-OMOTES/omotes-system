@@ -41,6 +41,9 @@ To set up the infrastructure components (for windows run in `Git Bash`):
 ./scripts/setup.sh
 ```
 
+This setup script does not work if influxdb contains a lot of data due to a timeout when loading the data on influxdb
+startup. The commands in `influxdb/influxdb-init.sh` can also be done in the running container after start instead.
+
 To start the infrastructure components:
 
 ```
