@@ -24,6 +24,16 @@ the `string`, `boolean`, `integer`, `float` and `datetime` parameter formats.
 Set the environment variable `WORKFLOW_SETTINGS_FILE` to the file to be used by the orchestrator,
 which will pass the workflows definitions to the sdk.
 
+#### Update workflow configuration
+
+To update the workflow configuration of a running omotes-system:
+
+1. Update the `WORKFLOW_SETTINGS_FILE` in the `.env` file
+2. Run `./scripts/start.sh`
+
+This will restart the orchestrator with the updated workflow configuration, which the orchestrator will pass through to
+the sdk's (omotes-rest).
+
 #### Gurobi license
 
 When using the `grow_worker_gurobi` a gurobi WLS license should be available under `gurobi/gurobi.lic`. This `gurobi/`
