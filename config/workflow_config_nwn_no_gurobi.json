@@ -8,6 +8,10 @@
     "workflow_type_description_name": "Draft Design - Optimization"
   },
   {
+    "workflow_type_name": "grow_optimizer_eac",
+    "workflow_type_description_name": "Draft Design - Optimization – EAC"
+  },
+  {
     "workflow_type_name": "simulator",
     "workflow_type_description_name": "Conceptual Design - Simulation",
     "workflow_parameters": [

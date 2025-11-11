@@ -197,6 +197,12 @@ services:
       <<: *grow_worker_env
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
+  grow_worker_optimizer_eac:
+    <<: *grow_worker
+    environment:
+      <<: *grow_worker_env
+      GROW_TASK_TYPE: grow_optimizer_eac
+
   grow_worker_gurobi:
     <<: *grow_worker
     deploy:
@@ -204,7 +210,7 @@ services:
       replicas: 1  # only 1 WLS available with a baseline of 1 active session
     environment:
       <<: *grow_worker_env
-      GROW_TASK_TYPE: grow_optimizer_no_heat_losses_gurobi,grow_optimizer_default_gurobi
+      GROW_TASK_TYPE: grow_optimizer_no_heat_losses_gurobi,grow_optimizer_default_gurobi,grow_optimizer_eac_gurobi
     volumes:
       - "./gurobi/gurobi.lic:/app/gurobi/gurobi.lic"
 
