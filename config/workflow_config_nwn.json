@@ -8,12 +8,20 @@
     "workflow_type_description_name": "Draft Design - Optimization"
   },
   {
+    "workflow_type_name": "grow_optimizer_eac",
+    "workflow_type_description_name": "Draft Design - Optimization – EAC"
+  },
+  {
     "workflow_type_name": "grow_optimizer_no_heat_losses_gurobi",
     "workflow_type_description_name": "Draft Design - Quickscan Validation - Gurobi"
   },
   {
     "workflow_type_name": "grow_optimizer_default_gurobi",
     "workflow_type_description_name": "Draft Design - Optimization - Gurobi"
+  },
+  {
+    "workflow_type_name": "grow_optimizer_eac_gurobi",
+    "workflow_type_description_name": "Draft Design - Optimization – EAC - Gurobi"
   },
   {
     "workflow_type_name": "simulator",

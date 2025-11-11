@@ -8,17 +8,20 @@ services:
 
   grow_worker_optimizer: &grow_worker
     image: omotes-worker-mesido-dev
-    build:
-      context: ..
-      dockerfile: optimizer-worker/dev.Dockerfile
 
   grow_worker_simulator:
     <<: *grow_worker
+    build:
+      context: ..
+      dockerfile: optimizer-worker/dev.Dockerfile
 
   grow_worker_optimizer_no_heat_losses:
     <<: *grow_worker
 
   grow_worker_optimizer_with_pressure:
+    <<: *grow_worker
+
+  grow_worker_optimizer_eac:
     <<: *grow_worker
 
   grow_worker_gurobi:

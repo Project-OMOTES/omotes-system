@@ -98,7 +98,7 @@ services:
       - manual_dev
 
   orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.5
+    image: ghcr.io/project-omotes/omotes_orchestrator:1.2.6
     restart: unless-stopped
     networks:
       - omotes
@@ -149,7 +149,7 @@ services:
         condition: service_healthy
 
   grow_worker_optimizer: &grow_worker
-    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:2.1.1
+    image: ghcr.io/project-omotes/omotes-grow-optimizer-worker:2.1.2
     restart: unless-stopped
     deploy: &grow_worker_deploy
       replicas: 2
@@ -197,6 +197,12 @@ services:
       <<: *grow_worker_env
       GROW_TASK_TYPE: grow_optimizer_with_pressure
 
+  grow_worker_optimizer_eac:
+    <<: *grow_worker
+    environment:
+      <<: *grow_worker_env
+      GROW_TASK_TYPE: grow_optimizer_eac
+
   grow_worker_gurobi:
     <<: *grow_worker
     deploy:
@@ -204,7 +210,7 @@ services:
       replicas: 1  # only 1 WLS available with a baseline of 1 active session
     environment:
       <<: *grow_worker_env
-      GROW_TASK_TYPE: grow_optimizer_no_heat_losses_gurobi,grow_optimizer_default_gurobi
+      GROW_TASK_TYPE: grow_optimizer_no_heat_losses_gurobi,grow_optimizer_default_gurobi,grow_optimizer_eac_gurobi
     volumes:
       - "./gurobi/gurobi.lic:/app/gurobi/gurobi.lic"
 

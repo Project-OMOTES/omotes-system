@@ -11,4 +11,5 @@ sed -i 's/LOG_LEVEL=[a-z]*/LOG_LEVEL=WARNING/gi' ${ENV_FILE}
 
 $DOCKER_COMPOSE --env-file ${ENV_FILE} -f $DOCKER_COMPOSE_FILE  down -v
 ./scripts/setup.sh $ENV_FILE "./docker-compose.yml -f ./docker-compose.override.setup.yml"
-$DOCKER_COMPOSE --env-file ${ENV_FILE} -f $DOCKER_COMPOSE_FILE up --build --abort-on-container-exit
+$DOCKER_COMPOSE --env-file ${ENV_FILE} -f $DOCKER_COMPOSE_FILE build
+$DOCKER_COMPOSE --env-file ${ENV_FILE} -f $DOCKER_COMPOSE_FILE up --abort-on-container-exit
