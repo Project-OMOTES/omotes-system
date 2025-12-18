@@ -103,14 +103,19 @@ def retrieve_esdl_file(path_str: str) -> str:
 
     return esdl_file
 
-
-ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
-DATABASE_PATTERN = re.compile(r"database=\"[a-z0-9-]+\"")
+ATTRIBUTE_REGEX_TO_IGNORE = dict(
+    id="[a-z0-9-]+", # uuid
+    database="[a-z0-9-]+", # uuid
+    reference="[a-z0-9-]+", # uuid
+    releaseDate=".*", # any format
+)
 
 
 def normalize_esdl(esdl: str) -> dict:
-    esdl_normalized = ID_PATTERN.sub('id=""', esdl)
-    esdl_normalized = DATABASE_PATTERN.sub('database=""', esdl_normalized)
+    esdl_normalized = esdl
+    for uuid_attribute, regex in ATTRIBUTE_REGEX_TO_IGNORE.items():
+        pattern = re.compile(f'{uuid_attribute}="{regex}"')
+        esdl_normalized = pattern.sub(f'{uuid_attribute}=""', esdl_normalized)
     return xmltodict.parse(esdl_normalized)
 
 
@@ -252,26 +257,6 @@ class TestWorkflows(unittest.TestCase):
             "./test_esdl/output/test__grow_optimizer_no_heat_losses__happy_path.esdl"
         )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
-
-    # def test__grow_optimizer_with_pressure__happy_path(self) -> None:
-    #     # Arrange
-    #     result_handler = OmotesJobHandler()
-    #     esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
-    #     workflow_type = "grow_optimizer_with_pressure"
-    #     timeout_seconds = 120.0
-    #     params_dict = {}
-    #
-    #     # Act
-    #     with omotes_client() as omotes_client_:
-    #         submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
-    #         result_handler.wait_until_result(timeout_seconds)
-    #
-    #     # Assert
-    #     self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-    #     expected_esdl = retrieve_esdl_file(
-    #         "./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl"
-    #     )
-    #     self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__simulator__happy_path(self) -> None:
         # Arrange

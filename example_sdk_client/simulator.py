@@ -10,7 +10,7 @@ from omotes_sdk.omotes_interface import (
     JobStatusUpdate,
 )
 
-rabbitmq_config = RabbitMQConfig(username="omotes", password="somepass1", virtual_host="omotes")
+rabbitmq_config = RabbitMQConfig(port=5673, username="omotes", password="somepass1", virtual_host="omotes")
 STOP_EVENT = threading.Event()
 
 
@@ -54,7 +54,7 @@ try:
 
     workflow_simulator = omotes_if.get_workflow_type_manager().get_workflow_by_name("simulator")
 
-    with open(r"./example_esdl_simulator.esdl", "r") as f:
+    with open(r"../system_tests/src/test_esdl/input/simulator_ates_short_run.esdl", "r") as f:
         input_esdl = f.read()
 
     omotes_if.submit_job(
@@ -62,8 +62,8 @@ try:
         job_reference="example_sdk_client.simulator",
         params_dict={
             "timestep": datetime.timedelta(hours=1),
-            "start_time": datetime.datetime(2019, 1, 2, 0, 0, 0),
-            "end_time": datetime.datetime(2019, 1, 2, 3, 0, 0),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0, tzinfo=datetime.UTC),
         },
         workflow_type=workflow_simulator,
         job_timeout=datetime.timedelta(hours=1),
