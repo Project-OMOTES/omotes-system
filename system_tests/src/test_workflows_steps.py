@@ -34,7 +34,7 @@ RABBITMQ_CONFIG = RabbitMQConfig(
     password=os.environ.get("RABBITMQ_PASSWORD", "somepass1"),
     virtual_host=os.environ.get("RABBITMQ_VIRTUALHOST", "omotes"),
     host=os.environ.get("RABBITMQ_HOST", "localhost"),
-    port=int(os.environ.get("RABBITMQ_PORT", "5673")),
+    port=int(os.environ.get("RABBITMQ_PORT", "5672")),
 )
 
 SQL_CONFIG = {
@@ -550,7 +550,7 @@ class TestWorkflows(unittest.TestCase):
 
     def test__simulator__job_delete_while_running_working(self) -> None:
         """This test depends on the environment variable:
-            JOB_RETENTION_SEC (currently set to 10 seconds)
+            JOB_RETENTION_SEC (currently set to 20 seconds)
 
         It is defined in system_tests/docker-compose.override.yml
         """
@@ -558,7 +558,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 100.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -578,13 +578,13 @@ class TestWorkflows(unittest.TestCase):
         self.expect_a_result(result_handler, JobResult.CANCELLED)
 
         # wait for time series manager to clean up (need two 10-second cycles)
-        sleep(30)
+        sleep(50)
 
         assert get_sql_esdl_time_series_info(submitted_job.id) is None
 
     def test__simulator__delete_time_series_data_after_run(self) -> None:
         """This test depends on the environment variable:
-            JOB_RETENTION_SEC (currently set to 10 seconds)
+            JOB_RETENTION_SEC (currently set to 20 seconds)
 
         It is defined in system_tests/docker-compose.override.yml
         """
@@ -592,7 +592,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 100.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -613,7 +613,7 @@ class TestWorkflows(unittest.TestCase):
         output_esdl = result_handler.result.output_esdl
 
         # wait for time series manager to clean up (need two 10-second cycles)
-        sleep(30)
+        sleep(50)
 
         # assert time series data deleted
         assert_influxdb_database_existence(output_esdl, False)
