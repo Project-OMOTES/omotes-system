@@ -216,7 +216,6 @@ fabric.properties
 .idea/*
 
 !.idea/codeStyles
-!.idea/runConfigurations
 
 unit_test_coverage/
 .env.test

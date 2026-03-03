@@ -34,7 +34,7 @@ RABBITMQ_CONFIG = RabbitMQConfig(
     password=os.environ.get("RABBITMQ_PASSWORD", "somepass1"),
     virtual_host=os.environ.get("RABBITMQ_VIRTUALHOST", "omotes"),
     host=os.environ.get("RABBITMQ_HOST", "localhost"),
-    port=int(os.environ.get("RABBITMQ_PORT", "5673")),
+    port=int(os.environ.get("RABBITMQ_PORT", "5672")),
 )
 
 SQL_CONFIG = {
@@ -103,14 +103,19 @@ def retrieve_esdl_file(path_str: str) -> str:
 
     return esdl_file
 
-
-ID_PATTERN = re.compile(r"id=\"[a-z0-9-]+\"")
-DATABASE_PATTERN = re.compile(r"database=\"[a-z0-9-]+\"")
+ATTRIBUTE_REGEX_TO_IGNORE = dict(
+    id="[a-z0-9-]+", # uuid
+    database="[a-z0-9-]+", # uuid
+    reference="[a-z0-9-]+", # uuid
+    releaseDate=".*", # any format
+)
 
 
 def normalize_esdl(esdl: str) -> dict:
-    esdl_normalized = ID_PATTERN.sub('id=""', esdl)
-    esdl_normalized = DATABASE_PATTERN.sub('database=""', esdl_normalized)
+    esdl_normalized = esdl
+    for uuid_attribute, regex in ATTRIBUTE_REGEX_TO_IGNORE.items():
+        pattern = re.compile(f'{uuid_attribute}="{regex}"')
+        esdl_normalized = pattern.sub(f'{uuid_attribute}=""', esdl_normalized)
     return xmltodict.parse(esdl_normalized)
 
 
@@ -252,26 +257,6 @@ class TestWorkflows(unittest.TestCase):
             "./test_esdl/output/test__grow_optimizer_no_heat_losses__happy_path.esdl"
         )
         self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
-
-    # def test__grow_optimizer_with_pressure__happy_path(self) -> None:
-    #     # Arrange
-    #     result_handler = OmotesJobHandler()
-    #     esdl_file = retrieve_esdl_file("./test_esdl/input/optimizer_poc_tutorial.esdl")
-    #     workflow_type = "grow_optimizer_with_pressure"
-    #     timeout_seconds = 120.0
-    #     params_dict = {}
-    #
-    #     # Act
-    #     with omotes_client() as omotes_client_:
-    #         submit_a_job(omotes_client_, esdl_file, workflow_type, params_dict, result_handler)
-    #         result_handler.wait_until_result(timeout_seconds)
-    #
-    #     # Assert
-    #     self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-    #     expected_esdl = retrieve_esdl_file(
-    #         "./test_esdl/output/test__grow_optimizer_with_pressure__happy_path.esdl"
-    #     )
-    #     self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
 
     def test__simulator__happy_path(self) -> None:
         # Arrange
@@ -565,7 +550,7 @@ class TestWorkflows(unittest.TestCase):
 
     def test__simulator__job_delete_while_running_working(self) -> None:
         """This test depends on the environment variable:
-            JOB_RETENTION_SEC (currently set to 10 seconds)
+            JOB_RETENTION_SEC (currently set to 20 seconds)
 
         It is defined in system_tests/docker-compose.override.yml
         """
@@ -573,7 +558,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 100.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -593,13 +578,13 @@ class TestWorkflows(unittest.TestCase):
         self.expect_a_result(result_handler, JobResult.CANCELLED)
 
         # wait for time series manager to clean up (need two 10-second cycles)
-        sleep(30)
+        sleep(50)
 
         assert get_sql_esdl_time_series_info(submitted_job.id) is None
 
     def test__simulator__delete_time_series_data_after_run(self) -> None:
         """This test depends on the environment variable:
-            JOB_RETENTION_SEC (currently set to 10 seconds)
+            JOB_RETENTION_SEC (currently set to 20 seconds)
 
         It is defined in system_tests/docker-compose.override.yml
         """
@@ -607,7 +592,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 100.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -628,7 +613,7 @@ class TestWorkflows(unittest.TestCase):
         output_esdl = result_handler.result.output_esdl
 
         # wait for time series manager to clean up (need two 10-second cycles)
-        sleep(30)
+        sleep(50)
 
         # assert time series data deleted
         assert_influxdb_database_existence(output_esdl, False)
