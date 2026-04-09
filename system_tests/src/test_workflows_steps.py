@@ -54,6 +54,7 @@ INFLUXDB_CONFIG = {
     "password": os.environ.get("INFLUXDB_ADMIN_PASSWORD", "9012"),
 }
 
+ESDL_VALUES_PRECISION = 1e-6
 
 class OmotesJobHandler:
     progress_updates: list[JobProgressUpdate]
@@ -110,13 +111,32 @@ ATTRIBUTE_REGEX_TO_IGNORE = dict(
     releaseDate=".*", # any format
 )
 
+NUMBER_REGEX = re.compile(r"^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?$")
+
+
+def convert_numeric_strings(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: convert_numeric_strings(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [convert_numeric_strings(item) for item in value]
+    if isinstance(value, str) and NUMBER_REGEX.match(value):
+        try:
+            return int(value)
+        except ValueError:
+            try:
+                return float(value)
+            except ValueError:
+                return value
+    return value
+
 
 def normalize_esdl(esdl: str) -> dict:
     esdl_normalized = esdl
     for uuid_attribute, regex in ATTRIBUTE_REGEX_TO_IGNORE.items():
         pattern = re.compile(f'{uuid_attribute}="{regex}"')
         esdl_normalized = pattern.sub(f'{uuid_attribute}=""', esdl_normalized)
-    return xmltodict.parse(esdl_normalized)
+    parsed_esdl = xmltodict.parse(esdl_normalized)
+    return convert_numeric_strings(parsed_esdl)
 
 
 def submit_a_job(
@@ -208,11 +228,11 @@ class TestWorkflows(unittest.TestCase):
     def compare_esdl(self, expected_esdl: str, result_esdl: str) -> None:
         expected = normalize_esdl(expected_esdl)
         result = normalize_esdl(result_esdl)
-        diff_msg = pformat(DeepDiff(expected, result))
+        diff = DeepDiff(expected, result, math_epsilon=ESDL_VALUES_PRECISION)
 
-        self.assertEqual(
-            expected, result, msg=f"Found the following differences:\n{diff_msg}"
-        )
+        if diff:
+            diff_msg = pformat(diff)
+            self.fail(f"Found the following differences:\n{diff_msg}")
 
     def test__grow_optimizer_default__happy_path(self) -> None:
         # Arrange

@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run optimizer.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/example_sdk_client/optimizer.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/example_sdk_client",
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/example_sdk_client"
+            }
+        },
+        {
+            "name": "test__grow_optimizer_default__happy_path",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "test_workflows_steps.py::TestWorkflows::test__grow_optimizer_default__happy_path",
+                "-v",
+                "-s"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/system_tests/src",
+            "envFile": "${workspaceFolder}/.env.test",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/system_tests"
+            }
+        }
+    ]
+}
