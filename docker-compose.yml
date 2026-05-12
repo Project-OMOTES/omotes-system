@@ -215,7 +215,7 @@ services:
       - "./gurobi/gurobi.lic:/app/gurobi/gurobi.lic"
 
   omotes_simulator_worker:
-    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.28
+    image: ghcr.io/project-omotes/omotes-simulator-worker:0.0.30beta2
     restart: unless-stopped
     deploy:
       replicas: 2
