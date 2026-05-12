@@ -41,7 +41,7 @@ RABBITMQ_CONFIG = RabbitMQConfig(
 # and changes with each kpi-calculator release, so exclude it from snapshot comparisons.
 # Note: this path assumes xmltodict parses a single <instance> element (dict, not list).
 # If multi-instance ESDLs are introduced, this path will need to be updated.
-EXCLUDE_KPIS: set[str] = {"root['esdl:EnergySystem']['instance']['area']['KPIs']"}
+EXCLUDE_KPI_PATHS: set[str] = {"root['esdl:EnergySystem']['instance']['area']['KPIs']"}
 
 SQL_CONFIG = {
     "host": os.environ.get("POSTGRES_HOST", "localhost"),
@@ -239,7 +239,7 @@ class TestWorkflows(unittest.TestCase):
     ) -> None:
         """Compare two ESDL strings for equality after normalization.
 
-        :param exclude_paths: Optional DeepDiff paths to ignore (e.g. EXCLUDE_KPIS).
+        :param exclude_paths: Optional DeepDiff paths to ignore (e.g. EXCLUDE_KPI_PATHS).
         """
         expected = normalize_esdl(expected_esdl)
         result = normalize_esdl(result_esdl)
@@ -318,7 +318,7 @@ class TestWorkflows(unittest.TestCase):
             "./test_esdl/output/test__simulator__happy_path.esdl"
         )
         self.compare_esdl(
-            expected_esdl, result_handler.result.output_esdl, exclude_paths=EXCLUDE_KPIS
+            expected_esdl, result_handler.result.output_esdl, exclude_paths=EXCLUDE_KPI_PATHS
         )
 
         # assert time series data created
@@ -368,7 +368,7 @@ class TestWorkflows(unittest.TestCase):
         for result_handler in result_handlers:
             self.expect_a_result(result_handler, JobResult.SUCCEEDED)
             self.compare_esdl(
-                expected_esdl, result_handler.result.output_esdl, exclude_paths=EXCLUDE_KPIS
+                expected_esdl, result_handler.result.output_esdl, exclude_paths=EXCLUDE_KPI_PATHS
             )
 
     def test__grow_optimizer_default__happy_path_1source(self) -> None:
@@ -787,23 +787,49 @@ class TestWorkflows(unittest.TestCase):
         for kpi in kpi_list:
             self.assertNotEqual(kpi.name, "", "Each KPI should have a name")
 
-        # CAPEX: the ATES asset in simulator_ates_short_run.esdl has
-        # investmentCosts=2333594.0 EUR (bare EUR unit, no conversion factor).
-        # This is the only asset with cost data so total CAPEX equals that value.
-        expected_capex = 2_333_594.0
         kpi_by_name = {kpi.name: kpi for kpi in kpi_list}
-        self.assertIn(
+
+        # Assert all expected KPI categories are present
+        expected_kpi_names = {
             "High level cost breakdown [EUR]",
-            kpi_by_name,
-            "Cost breakdown KPI missing from output",
+            "Net Present Value [EUR]",
+            "Equivalent Annual Cost [EUR/yr]",
+            "Total Cost of Ownership [EUR]",
+            "Energy breakdown [Wh]",
+        }
+        self.assertEqual(
+            expected_kpi_names,
+            set(kpi_by_name.keys()),
+            "KPI names do not match expected set",
         )
+
+        # CAPEX: the ATES asset in simulator_ates_short_run.esdl has
+        # investmentCosts=2333594.0 EUR — only asset with cost data so total CAPEX equals that.
+        # OPEX: fixedOperationalCosts(30000) + fixedMaintenanceCosts(115472.22)
+        #       + variableOperationalCosts(69666.67) = 215138.89 EUR/yr — asset-level, time-independent.
         cost_items = {
             item.label: item.value
             for item in kpi_by_name["High level cost breakdown [EUR]"].distribution.stringItem
         }
         self.assertAlmostEqual(
             cost_items.get("CAPEX (total)", 0.0),
-            expected_capex,
+            2_333_594.0,
             places=1,
             msg=f"CAPEX should match investmentCosts in simulator_ates_short_run.esdl; got {cost_items}",
         )
+        self.assertAlmostEqual(
+            cost_items.get("OPEX (yearly)", 0.0),
+            215_138.89,
+            places=1,
+            msg=f"OPEX should match sum of fixed/variable costs in simulator_ates_short_run.esdl; got {cost_items}",
+        )
+
+        # Energy breakdown: confirms time-series results flowed through the simulation
+        energy_items = {
+            item.label: item.value
+            for item in kpi_by_name["Energy breakdown [Wh]"].distribution.stringItem
+        }
+        self.assertIn("Production", energy_items, "Energy breakdown should contain Production")
+        self.assertIn("Demand", energy_items, "Energy breakdown should contain Demand")
+        self.assertGreater(energy_items["Production"], 0.0, "Production energy should be positive")
+        self.assertGreater(energy_items["Demand"], 0.0, "Demand energy should be positive")
