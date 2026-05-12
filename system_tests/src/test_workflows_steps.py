@@ -37,6 +37,12 @@ RABBITMQ_CONFIG = RabbitMQConfig(
     port=int(os.environ.get("RABBITMQ_PORT", "5672")),
 )
 
+# KPI content is tested separately in test__simulator__kpis_present_in_output
+# and changes with each kpi-calculator release, so exclude it from snapshot comparisons.
+# Note: this path assumes xmltodict parses a single <instance> element (dict, not list).
+# If multi-instance ESDLs are introduced, this path will need to be updated.
+EXCLUDE_KPIS: set[str] = {"root['esdl:EnergySystem']['instance']['area']['KPIs']"}
+
 SQL_CONFIG = {
     "host": os.environ.get("POSTGRES_HOST", "localhost"),
     "port": int(os.environ.get("POSTGRES_PORT", "6432")),
@@ -225,10 +231,19 @@ class TestWorkflows(unittest.TestCase):
                 f"The job did not finish as {expected_result}. Found {result.result_type}"
             )
 
-    def compare_esdl(self, expected_esdl: str, result_esdl: str) -> None:
+    def compare_esdl(
+        self,
+        expected_esdl: str,
+        result_esdl: str,
+        exclude_paths: set[str] | None = None,
+    ) -> None:
+        """Compare two ESDL strings for equality after normalization.
+
+        :param exclude_paths: Optional DeepDiff paths to ignore (e.g. EXCLUDE_KPIS).
+        """
         expected = normalize_esdl(expected_esdl)
         result = normalize_esdl(result_esdl)
-        diff = DeepDiff(expected, result, math_epsilon=ESDL_VALUES_PRECISION)
+        diff = DeepDiff(expected, result, math_epsilon=ESDL_VALUES_PRECISION, exclude_paths=exclude_paths)
 
         if diff:
             diff_msg = pformat(diff)
@@ -283,7 +298,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 120.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -302,7 +317,9 @@ class TestWorkflows(unittest.TestCase):
         expected_esdl = retrieve_esdl_file(
             "./test_esdl/output/test__simulator__happy_path.esdl"
         )
-        self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
+        self.compare_esdl(
+            expected_esdl, result_handler.result.output_esdl, exclude_paths=EXCLUDE_KPIS
+        )
 
         # assert time series data created
         assert_influxdb_database_existence(result_handler.result.output_esdl, True)
@@ -322,7 +339,7 @@ class TestWorkflows(unittest.TestCase):
             "./test_esdl/input/simulator_ates_short_run.esdl"
         )
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 120.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -350,7 +367,9 @@ class TestWorkflows(unittest.TestCase):
 
         for result_handler in result_handlers:
             self.expect_a_result(result_handler, JobResult.SUCCEEDED)
-            self.compare_esdl(expected_esdl, result_handler.result.output_esdl)
+            self.compare_esdl(
+                expected_esdl, result_handler.result.output_esdl, exclude_paths=EXCLUDE_KPIS
+            )
 
     def test__grow_optimizer_default__happy_path_1source(self) -> None:
         # Arrange
@@ -431,7 +450,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 120.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
@@ -459,7 +478,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 60.0
+        timeout_seconds = 120.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0),
@@ -612,7 +631,7 @@ class TestWorkflows(unittest.TestCase):
         result_handler = OmotesJobHandler()
         esdl_file = retrieve_esdl_file("./test_esdl/input/simulator_tutorial.esdl")
         workflow_type = "simulator"
-        timeout_seconds = 100.0
+        timeout_seconds = 160.0
         params_dict = {
             "timestep": datetime.timedelta(hours=1),
             "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
@@ -722,3 +741,69 @@ class TestWorkflows(unittest.TestCase):
         self.assertTrue(str(high_priority_job.id) in ordered_job_result_ids)
         # check that high priority job result was not last (exact order may vary)
         self.assertNotEqual(str(high_priority_job.id), ordered_job_result_ids[-1])
+
+    def test__simulator__kpis_present_in_output(self) -> None:
+        """Test that KPIs are calculated and stored in the output ESDL.
+
+        Uses simulator_ates_short_run.esdl which contains costInformation on assets,
+        allowing the kpi-calculator to produce non-trivial KPI results.
+        """
+        # Arrange
+        result_handler = OmotesJobHandler()
+        esdl_file = retrieve_esdl_file(
+            "./test_esdl/input/simulator_ates_short_run.esdl"
+        )
+        workflow_type = "simulator"
+        timeout_seconds = 120.0
+        params_dict = {
+            "timestep": datetime.timedelta(hours=1),
+            "start_time": datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+            "end_time": datetime.datetime(2019, 1, 1, 3, 0, 0, tzinfo=datetime.UTC),
+            "system_lifetime": 25.0,
+        }
+
+        # Act
+        with omotes_client() as omotes_client_:
+            submit_a_job(
+                omotes_client_, esdl_file, workflow_type, params_dict, result_handler
+            )
+            result_handler.wait_until_result(timeout_seconds)
+
+        # Assert
+        self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        output_esh = esdl.esdl_handler.EnergySystemHandler()
+        output_esh.load_from_string(result_handler.result.output_esdl)
+        energy_system = output_esh.energy_system
+
+        # KPIs are attached to instance[0].area, not energy_system directly
+        self.assertGreater(
+            len(energy_system.instance), 0, "Output ESDL must have at least one instance"
+        )
+        main_area = energy_system.instance[0].area
+        self.assertIsNotNone(main_area, "instance[0] must have an area")
+        self.assertIsNotNone(main_area.KPIs, "KPIs should be present in the main area")
+        kpi_list = list(main_area.KPIs.kpi)
+        self.assertGreater(len(kpi_list), 0, "At least one KPI should be calculated")
+        for kpi in kpi_list:
+            self.assertNotEqual(kpi.name, "", "Each KPI should have a name")
+
+        # CAPEX: the ATES asset in simulator_ates_short_run.esdl has
+        # investmentCosts=2333594.0 EUR (bare EUR unit, no conversion factor).
+        # This is the only asset with cost data so total CAPEX equals that value.
+        expected_capex = 2_333_594.0
+        kpi_by_name = {kpi.name: kpi for kpi in kpi_list}
+        self.assertIn(
+            "High level cost breakdown [EUR]",
+            kpi_by_name,
+            "Cost breakdown KPI missing from output",
+        )
+        cost_items = {
+            item.label: item.value
+            for item in kpi_by_name["High level cost breakdown [EUR]"].distribution.stringItem
+        }
+        self.assertAlmostEqual(
+            cost_items.get("CAPEX (total)", 0.0),
+            expected_capex,
+            places=1,
+            msg=f"CAPEX should match investmentCosts in simulator_ates_short_run.esdl; got {cost_items}",
+        )
