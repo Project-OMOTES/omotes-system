@@ -3,6 +3,8 @@ services:
     build: system_tests/ # This is referenced from root of repo due to how docker-compose works.
     networks:
       - omotes
+    volumes:
+      - ./system_tests_artifacts:/app/test_esdl/artifacts
     depends_on:
       rabbitmq:
         condition: service_healthy
