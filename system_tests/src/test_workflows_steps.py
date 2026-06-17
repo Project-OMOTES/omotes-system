@@ -62,6 +62,18 @@ INFLUXDB_CONFIG = {
 
 ESDL_VALUES_PRECISION = 1e-6
 
+ARTIFACTS_DIR = Path(os.environ.get("OPTIMIZER_ARTIFACTS_DIR", "/app/test_esdl/artifacts"))
+
+
+def save_optimizer_output(test_name: str, output_esdl: str) -> None:
+    """Write the optimizer output ESDL to the artifacts directory for CI upload."""
+    try:
+        ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
+        (ARTIFACTS_DIR / f"{test_name}.esdl").write_text(output_esdl, encoding="utf-8")
+    except OSError as exc:
+        print(f"[{test_name}] WARNING: could not save artifact: {exc}", flush=True)
+
+
 class OmotesJobHandler:
     progress_updates: list[JobProgressUpdate]
     status_updates: list[JobStatusUpdate]
@@ -266,6 +278,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        if result_handler.result.output_esdl:
+            save_optimizer_output("test__grow_optimizer_default__happy_path", result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file(
             "./test_esdl/output/test__grow_optimizer_default__happy_path.esdl"
         )
@@ -288,6 +302,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        if result_handler.result.output_esdl:
+            save_optimizer_output("test__grow_optimizer_no_heat_losses__happy_path", result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file(
             "./test_esdl/output/test__grow_optimizer_no_heat_losses__happy_path.esdl"
         )
@@ -390,6 +406,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        if result_handler.result.output_esdl:
+            save_optimizer_output("test__grow_optimizer_default__happy_path_1source", result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file(
             "./test_esdl/output/test__grow_optimizer_default__happy_path_1source.esdl"
         )
@@ -414,6 +432,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        if result_handler.result.output_esdl:
+            save_optimizer_output("test__grow_optimizer_default__happy_path_2ndsource", result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file(
             "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource.esdl"
         )
@@ -440,6 +460,8 @@ class TestWorkflows(unittest.TestCase):
 
         # Assert
         self.expect_a_result(result_handler, JobResult.SUCCEEDED)
+        if result_handler.result.output_esdl:
+            save_optimizer_output("test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped", result_handler.result.output_esdl)
         expected_esdl = retrieve_esdl_file(
             "./test_esdl/output/test__grow_optimizer_default__happy_path_2ndsource_merit_order_swapped.esdl"
         )
@@ -683,7 +705,7 @@ class TestWorkflows(unittest.TestCase):
             def _watch_job(result_handler: OmotesJobHandler):
                 result_handler.wait_until_result(timeout_seconds)
                 with result_ids_lock:
-                    ordered_job_result_ids.append(result_handler.result.uuid)
+                    ordered_job_result_ids.append(str(result_handler.result.uuid))
                 with condition:
                     condition.notify_all()
 

@@ -19,3 +19,10 @@ jobs:
     - name: run system tests
       run: |
         ./scripts/test_system.sh
+    - name: upload optimizer output ESDLs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: optimizer-output-esdls-py${{ matrix.python-version }}
+        path: system_tests_artifacts/
+        if-no-files-found: warn
