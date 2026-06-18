@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<esdl:EnergySystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:esdl="http://www.tno.nl/esdl" name="PoC Tutorial_SmartControlOptimized_grow_optimizer_default" id="4c035cf2-c11f-490d-9a06-0b0c652385ee" description="" esdlVersion="v2207" version="13">
+<esdl:EnergySystem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:esdl="http://www.tno.nl/esdl" name="PoC Tutorial_SmartControlOptimized_grow_optimizer_default" id="9b1c3932-c766-409f-9b42-7885148fe16b" description="" esdlVersion="v2207" version="13">
   <energySystemInformation xsi:type="esdl:EnergySystemInformation" id="5fa7e6e3-5701-48a7-bbbd-cad59a46f6c5">
     <carriers xsi:type="esdl:Carriers" id="42a694c6-9a1b-4cc7-bbae-0b44725f9434">
       <carrier xsi:type="esdl:HeatCommodity" id="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" name="Primary" supplyTemperature="80.0"/>
@@ -11,14 +11,16 @@
   </energySystemInformation>
   <instance xsi:type="esdl:Instance" id="9af52a01-24e2-4bbe-a7b8-f868161e6ca3" name="Untitled instance">
     <area xsi:type="esdl:Area" name="Untitled area" id="9edf5aa3-3855-4dac-b6f5-01c2edf1a43a">
-      <asset xsi:type="esdl:ResidualHeatSource" power="4066762.463695089" name="ResidualHeatSource_72d7" id="72d74fb5-134f-4bfb-829e-220ab76a8a7b">
+      <asset xsi:type="esdl:ResidualHeatSource" power="4063829.812850821" name="ResidualHeatSource_72d7" id="72d74fb5-134f-4bfb-829e-220ab76a8a7b">
         <geometry xsi:type="esdl:Point" lon="4.372987747192384" lat="52.00467202060717" CRS="WGS84"/>
         <port xsi:type="esdl:OutPort" id="d890f8aa-9b94-493d-b017-bd7cebaf8c77" name="Out" connectedTo="07c2f88e-85be-4b8b-a72e-14364a3810c9" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="1e3cba9a-ca8e-4164-aafe-7e7f6d115ce2" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='72d74fb5-134f-4bfb-829e-220ab76a8a7b'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="85ff9cff-e321-4097-821f-52727d749621" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='72d74fb5-134f-4bfb-829e-220ab76a8a7b'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="03538db5-cb6e-4b14-8200-0d6ec7435186" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="f4bf3ba5-14a6-4851-8296-cd60d4538322" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='72d74fb5-134f-4bfb-829e-220ab76a8a7b'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="c1196003-1906-427b-be49-15c7ad652e1e" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='72d74fb5-134f-4bfb-829e-220ab76a8a7b'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="77dac023-546e-47e0-af7c-26f09d480648" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
         </port>
         <port xsi:type="esdl:InPort" id="4d6c18cd-cc52-443d-8e53-96cd188dd1a8" name="In" connectedTo="c0a27794-98e2-4119-a363-cec4f0b525cd" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
@@ -40,39 +42,41 @@
           </marginalCosts>
         </costInformation>
       </asset>
-      <asset xsi:type="esdl:Pipe" diameter="DN200" name="Pipe1" outerDiameter="0.315" length="818.07" innerDiameter="0.2101" id="Pipe1" related="Pipe1_ret">
+      <asset xsi:type="esdl:Pipe" diameter="DN150" name="Pipe1" outerDiameter="0.25" length="818.07" innerDiameter="0.1603" id="Pipe1" related="Pipe1_ret">
         <geometry xsi:type="esdl:Line">
           <point xsi:type="esdl:Point" lon="4.372987747192384" lat="52.00467202060717"/>
           <point xsi:type="esdl:Point" lon="4.365863800048829" lat="52.00210934629504"/>
           <point xsi:type="esdl:Point" lon="4.367129802703858" lat="51.99996926872789"/>
         </geometry>
         <material xsi:type="esdl:CompoundMatter" compoundType="LAYERED">
-          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.0045">
-            <matter xsi:type="esdl:Material" id="930aa5cf-b76e-4049-afa7-ea79445faf55" name="steel" thermalConductivity="52.15"/>
+          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.004">
+            <matter xsi:type="esdl:Material" id="fa85538e-ebfa-4bce-8386-04980e793e18" name="steel" thermalConductivity="52.15"/>
           </component>
-          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.04385">
-            <matter xsi:type="esdl:Material" id="f6bd7242-b1a3-4b24-9edd-ad58a830444b" name="PUR" thermalConductivity="0.027"/>
+          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.03725">
+            <matter xsi:type="esdl:Material" id="3bafa031-f40f-42fc-b409-e35fffe5f457" name="PUR" thermalConductivity="0.027"/>
           </component>
-          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.0041">
-            <matter xsi:type="esdl:Material" id="81df81a9-ac8b-4c9d-8d71-dd2bbee92fa3" name="HDPE" thermalConductivity="0.4"/>
+          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.0036">
+            <matter xsi:type="esdl:Material" id="893337e3-58f1-4fb4-8c25-68d71b11fb71" name="HDPE" thermalConductivity="0.4"/>
           </component>
         </material>
         <port xsi:type="esdl:InPort" id="07c2f88e-85be-4b8b-a72e-14364a3810c9" name="In" connectedTo="d890f8aa-9b94-493d-b017-bd7cebaf8c77" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6"/>
         <port xsi:type="esdl:OutPort" id="fc2801d0-215b-4d2b-9846-ee4918b87e21" name="Out" connectedTo="d149871b-d76a-4cc3-8922-c8d99205f47e" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="b2e13723-4bf9-4d5d-9b34-fcb80981c938" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="62f894fb-d18b-4012-b7b3-c5e38e2f4971" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="2fb9ffa0-e755-47ec-ad0b-a9d73c2a1a7d" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="5297a8e4-6afa-4710-b5e0-5b0e45f53af5" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="68095398-34ed-49da-9002-05ff4b30392f" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="22bfad25-4de5-49b6-8bbb-0ded1e1a8966" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="98c4f7ec-d446-4b6a-9e6e-4877da6c690a" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="d4d300f4-ce40-4d67-9d35-69b273ccacc8" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="aa242810-2b40-4a2e-ab3a-8f1074aee66c" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2d8170ea-3067-4fe1-a681-91c360cfacc4" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Pressure"/>
         </port>
         <dataSource xsi:type="esdl:DataSource" attribution="https://www.logstor.com/media/6506/product-catalogue-uk-202003.pdf" name="Logstor Product Catalogue Version 2020.03"/>
         <costInformation xsi:type="esdl:CostInformation" id="4a3d48d9-74bb-4407-b249-9e2af4d1037c">
-          <investmentCosts xsi:type="esdl:SingleValue" value="1355.3" name="Combined investment and installation costs" id="2ab2214c-8d42-4b74-877f-7fb97f6eab86">
+          <investmentCosts xsi:type="esdl:SingleValue" value="1126.4" name="Combined investment and installation costs" id="2ab2214c-8d42-4b74-877f-7fb97f6eab86">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" id="9169bd50-197f-4d6b-aaac-b383a59c815d" description="Costs in EUR/m" perUnit="METRE" physicalQuantity="COST" unit="EURO"/>
           </investmentCosts>
         </costInformation>
@@ -100,16 +104,18 @@
         </material>
         <port xsi:type="esdl:InPort" id="863d2ff2-7a68-4bfb-8aa5-dab741b72b25" name="In" connectedTo="3535f436-1270-4b1b-a326-41d69cd6e330" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6"/>
         <port xsi:type="esdl:OutPort" id="8c38fc93-ed85-42ef-9be6-87d47c416e90" name="Out" connectedTo="4d629e6e-5db4-4a8f-9945-934a24ede11a" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="727911ce-7446-4465-8264-38e483d77da8" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="11e2eae9-fc4e-4f93-a31a-82959d03bc1a" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="52530dc7-d3e7-4cb4-9982-fcad9dc5d72b" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="c66baf3d-92bd-48f2-a1f0-ba20a2012228" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2d912648-eec5-4fc6-ace4-f7f466edb374" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="10f9f861-6a47-4f0f-a20d-ad0ff93f71e4" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="bac4e6ce-2ed6-4675-8104-93b33b83e90b" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="bc73f1c2-0b16-42bc-9db0-1d1c6cf38e29" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="07bb54d3-7977-44bd-ae21-dc8c70e4a94a" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="4fac6761-c290-4710-b81f-36888d5f6662" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Pressure"/>
         </port>
         <dataSource xsi:type="esdl:DataSource" attribution="https://www.logstor.com/media/6506/product-catalogue-uk-202003.pdf" name="Logstor Product Catalogue Version 2020.03"/>
         <costInformation xsi:type="esdl:CostInformation" id="4a3d48d9-74bb-4407-b249-9e2af4d1037c">
@@ -137,16 +143,18 @@
         </material>
         <port xsi:type="esdl:InPort" id="e44060e9-8b0e-41e5-ae46-ce074c891c15" name="In" connectedTo="a42acf83-361d-4d4d-8001-8617daad939a" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6"/>
         <port xsi:type="esdl:OutPort" id="13edd58c-4a04-4770-8aac-c6e8689acbba" name="Out" connectedTo="23cdb929-5cfc-4b8d-963e-06b6e6cf3a5c" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="9c2bc3e5-1749-4e93-a963-c88ee390b1e1" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="dc3ccda6-3170-4608-af72-a739bad38936" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="b08d4f86-9d47-4105-bece-1bc153626eb9" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2a20a87d-81d1-4c7c-9d67-a06620c81fd6" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="85674e6f-db2e-408b-822b-bbd9dcc265a7" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="d69ca760-e825-4903-9b86-21b7cd91f086" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="01822fa7-535e-4ad1-a17f-41e3f3b4fc70" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="c2076910-c958-4cb2-8864-6873bd927807" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="dc59a7d7-3642-44a2-9215-c5f4adcae031" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="0a368420-9e63-410c-b0d0-934e0f4e2612" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Pressure"/>
         </port>
         <dataSource xsi:type="esdl:DataSource" attribution="https://www.logstor.com/media/6506/product-catalogue-uk-202003.pdf" name="Logstor Product Catalogue Version 2020.03"/>
         <costInformation xsi:type="esdl:CostInformation" id="4a3d48d9-74bb-4407-b249-9e2af4d1037c">
@@ -178,16 +186,18 @@
         </material>
         <port xsi:type="esdl:InPort" id="7f18f0b7-fcf3-4d83-8a65-79cbd3273ea7" name="In" connectedTo="3535f436-1270-4b1b-a326-41d69cd6e330" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6"/>
         <port xsi:type="esdl:OutPort" id="5169316d-ae93-4f04-9a34-7c776444b651" name="Out" connectedTo="2c5a109b-0d98-47b6-acc1-05e1708f8b85" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="8f4906fe-5133-4c65-a950-12e6aede2dc1" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="1e73cd6d-9ee0-4477-bf69-bd36069cc01d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="eefd0d6b-03ee-41e0-b5dc-558b0c774195" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="6bb0f67c-1983-4ccc-a7ee-6961bdbad8ba" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="f7f3e4f8-7ce2-4862-8581-28f9eacababe" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="d537f6e4-b4c2-4b72-8de6-976e20e194f0" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="1b11b537-3bda-4c3a-a5f1-4cc5fbf2f8d5" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="29679474-8835-497e-bb58-dfbe03d36c28" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="4c38164f-8086-4fb4-85af-5ceb04754f96" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="6ec20eb8-9899-4732-8711-1e7c13ca2af6" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Pressure"/>
         </port>
         <dataSource xsi:type="esdl:DataSource" attribution="https://www.logstor.com/media/6506/product-catalogue-uk-202003.pdf" name="Logstor Product Catalogue Version 2020.03"/>
         <costInformation xsi:type="esdl:CostInformation" id="384df56d-e3f0-4794-a0e2-bc0c71482e45">
@@ -214,16 +224,18 @@
         </material>
         <port xsi:type="esdl:InPort" id="20165ec3-cf86-41e4-976f-079ba0ca5be4" name="In" connectedTo="a42acf83-361d-4d4d-8001-8617daad939a" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6"/>
         <port xsi:type="esdl:OutPort" id="787c6ae3-96da-41e1-af86-6e68a1e28cb1" name="Out" connectedTo="01caa60f-1549-4f3f-817e-e4e6807b2398" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2f001f52-8f4e-4516-9cc4-b850eac45ad9" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="500a5993-34c7-4009-ad93-c1dc6d872b58" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="4a41aba6-1a29-4202-af9c-ce50892265b3" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="c0fca031-6fbf-485d-aee9-763f342a156c" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="3b852652-5ddd-41b1-b9c4-7bbcfa89f681" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="50b67f2f-4fae-4d57-ba96-0f4f45d09247" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="4c291cfc-4f3c-4be6-b1d7-70fd4d32b37b" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="14b7ed66-40f3-4909-b79e-971b7720de53" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="fef8284d-ecaa-4e73-93cf-d22dc9968bca" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2b1c3036-4610-4f10-8ea7-fcc0ed25382e" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="PostProc.Pressure"/>
         </port>
         <dataSource xsi:type="esdl:DataSource" attribution="https://www.logstor.com/media/6506/product-catalogue-uk-202003.pdf" name="Logstor Product Catalogue Version 2020.03"/>
         <costInformation xsi:type="esdl:CostInformation" id="4c8d9c8f-7e99-4402-8f66-d413e73db121">
@@ -242,7 +254,7 @@
         <port xsi:type="esdl:InPort" id="6b4d9bba-484b-46aa-bfe6-895d491b6747" name="ret_port" connectedTo="59b53a77-a253-4a96-81ef-84e719a1f518 6f9268a0-1fd9-42f6-8821-2d7d4a6e5618" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
         <port xsi:type="esdl:OutPort" id="5a47482f-6cdf-41b3-91b0-014578ee8143" name="ret_port" connectedTo="da70a1aa-53c4-496e-ba63-2c04674b8c84" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
       </asset>
-      <asset xsi:type="esdl:Pipe" diameter="DN200" name="Pipe1_ret" outerDiameter="0.315" id="Pipe1_ret" length="818.07" innerDiameter="0.2101" related="Pipe1">
+      <asset xsi:type="esdl:Pipe" diameter="DN150" name="Pipe1_ret" outerDiameter="0.25" id="Pipe1_ret" length="818.07" innerDiameter="0.1603" related="Pipe1">
         <geometry xsi:type="esdl:Line">
           <point xsi:type="esdl:Point" lon="4.3663488762941665" lat="52.000059268817886" CRS="WGS84"/>
           <point xsi:type="esdl:Point" lon="4.365092860885141" lat="52.00219934638504" CRS="WGS84"/>
@@ -250,26 +262,28 @@
         </geometry>
         <port xsi:type="esdl:InPort" id="2c3c73cb-d282-4c97-a060-922c91c50180" name="In_ret" connectedTo="044ef084-2a9e-4356-bac2-207f5361d4ce" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
         <port xsi:type="esdl:OutPort" id="c0a27794-98e2-4119-a363-cec4f0b525cd" name="Out_ret" connectedTo="4d6c18cd-cc52-443d-8e53-96cd188dd1a8" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="0427f895-c95d-4ebe-8998-3284aff5471b" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="72a36264-6101-47e2-a50a-1fa6afe027ed" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="a2e3b788-3d81-48cd-a4e9-35ad33bc0a7e" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="ffc32241-bdbf-46e3-92ae-7a42f1ff9f66" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2544ca5f-1317-4837-b972-ff674f5ba067" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="4d7cdbe4-d91c-43da-91e0-d4752fbadc98" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="28338e1c-bc65-4c17-8056-281bb8361ec8" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="34c47f24-3f43-460c-b53b-1e125be3b49a" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="c08871fb-4cc0-4ecd-af9a-6e89e5ccf8d7" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="f7425008-a1f8-4cf4-b07d-d58375d7329e" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe1_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Pressure"/>
         </port>
         <material xsi:type="esdl:CompoundMatter" compoundType="LAYERED">
-          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.0045">
-            <matter xsi:type="esdl:Material" id="930aa5cf-b76e-4049-afa7-ea79445faf55" name="steel" thermalConductivity="52.15"/>
+          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.004">
+            <matter xsi:type="esdl:Material" id="fa85538e-ebfa-4bce-8386-04980e793e18" name="steel" thermalConductivity="52.15"/>
           </component>
-          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.04385">
-            <matter xsi:type="esdl:Material" id="f6bd7242-b1a3-4b24-9edd-ad58a830444b" name="PUR" thermalConductivity="0.027"/>
+          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.03725">
+            <matter xsi:type="esdl:Material" id="3bafa031-f40f-42fc-b409-e35fffe5f457" name="PUR" thermalConductivity="0.027"/>
           </component>
-          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.0041">
-            <matter xsi:type="esdl:Material" id="81df81a9-ac8b-4c9d-8d71-dd2bbee92fa3" name="HDPE" thermalConductivity="0.4"/>
+          <component xsi:type="esdl:CompoundMatterComponent" layerWidth="0.0036">
+            <matter xsi:type="esdl:Material" id="893337e3-58f1-4fb4-8c25-68d71b11fb71" name="HDPE" thermalConductivity="0.4"/>
           </component>
         </material>
       </asset>
@@ -280,16 +294,18 @@
         </geometry>
         <port xsi:type="esdl:InPort" id="da70a1aa-53c4-496e-ba63-2c04674b8c84" name="In_ret" connectedTo="5a47482f-6cdf-41b3-91b0-014578ee8143" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
         <port xsi:type="esdl:OutPort" id="c5df4e61-6603-4315-a45a-196903690d9e" name="Out_ret" connectedTo="1ba08c64-4c54-4f23-93bf-2b2f6c04229d" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="7c97995c-5ca5-42de-a6d3-4183eb6acdee" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="21577db9-6fd0-426d-967c-0e59c95cb460" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="49eaac9f-c0f8-46d9-8ecf-e6bde1e9a174" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="45625f0b-980e-4b73-bc2b-6514095555cc" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="f5581eef-c3ef-4d1e-a772-878dccaf29da" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="11339b07-d574-4cd0-b39e-1ee40392ed8d" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="f7629df7-0070-4ce0-9be9-8d2124f795c4" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="e2cfd018-f804-456d-a255-7f2cd0990b3d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="cef0d5d8-a9ab-4c21-92d7-84cb955deb02" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="4ada6c53-7d14-4000-bb63-9f941cbcb701" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe2_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Pressure"/>
         </port>
       </asset>
       <asset xsi:type="esdl:Pipe" diameter="DN400" name="Pipe3_ret" outerDiameter="0.56" id="Pipe3_ret" length="1182.23" innerDiameter="0.3938" related="Pipe3">
@@ -300,16 +316,18 @@
         </geometry>
         <port xsi:type="esdl:InPort" id="6d1edc18-1962-4d3d-9882-ef27ae1702e8" name="In_ret" connectedTo="0fd050fa-15ff-4f1e-b0bd-ef1823365eaa" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
         <port xsi:type="esdl:OutPort" id="59b53a77-a253-4a96-81ef-84e719a1f518" name="Out_ret" connectedTo="6b4d9bba-484b-46aa-bfe6-895d491b6747" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="03d9a576-22e6-4ab7-a794-a7e4dbe4f34a" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="b6c739a2-f5d5-4d9e-a9f7-712bd9801692" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="e521f06c-1953-4885-ae1e-619b40b55147" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="ff726310-ccca-4f97-9f71-242e3b137c30" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="6be4fd14-6a45-470c-84d5-ce3ac9e6b371" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="cee4043b-eb44-4472-b086-65f219933ad2" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="dcb7439e-03de-415e-94da-f50eed2a300c" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="030985df-1c0e-463a-aaae-d47210d43fa2" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="8f8a9300-ef5c-4068-86d6-34e16de34e03" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="24201e59-82e1-440a-997d-994dda424c58" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe3_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Pressure"/>
         </port>
       </asset>
       <asset xsi:type="esdl:Pipe" diameter="DN300" name="Pipe4_ret" outerDiameter="0.45" id="Pipe4_ret" length="455.4" innerDiameter="0.3127" related="Pipe4">
@@ -319,16 +337,18 @@
         </geometry>
         <port xsi:type="esdl:InPort" id="5e2f4591-43f2-489f-8eb2-63105dbd0355" name="In_ret" connectedTo="d7eb3623-7481-41bb-911d-2dd9bd67db39" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
         <port xsi:type="esdl:OutPort" id="23d8b6bb-9480-4f02-ba7c-d00de8ff206e" name="Out_ret" connectedTo="1ba08c64-4c54-4f23-93bf-2b2f6c04229d" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="3c60918d-ed5b-46ea-bd20-81baa2db2371" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="4f2f3628-0e12-4f8b-add0-60e7e2ebc958" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="6fb8e626-307a-4f61-8d1f-a6272c24c1ce" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="30798baf-c3c1-4c4f-8326-bf56e4e534d8" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="27a98de2-2546-4e20-bb95-134e2245447d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="493a9a26-dbfb-427d-9e3b-4368ad3becf8" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="d01a9972-22f7-43b6-9105-00c20f8ddc0e" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="4bb57962-ddac-4a2e-8d72-c20be9e386ea" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="7503e841-be40-44e5-a05b-372d3766aab4" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="b5900533-e04c-4245-8d72-3226d65052d2" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe4_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Pressure"/>
         </port>
       </asset>
       <asset xsi:type="esdl:Pipe" diameter="DN300" name="Pipe5_ret" outerDiameter="0.45" id="Pipe5_ret" length="252.3" innerDiameter="0.3127" related="Pipe5">
@@ -338,16 +358,18 @@
         </geometry>
         <port xsi:type="esdl:InPort" id="35ddd90a-e45c-4afd-95b4-80ce6c927071" name="In_ret" connectedTo="ca90e0a5-f866-4ec2-9b3b-07f054f1c2b2" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret"/>
         <port xsi:type="esdl:OutPort" id="6f9268a0-1fd9-42f6-8821-2d7d4a6e5618" name="Out_ret" connectedTo="6b4d9bba-484b-46aa-bfe6-895d491b6747" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="8c95ba71-8a3d-468e-b0b1-4dc52826ba97" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="8f8034e7-0c28-4e5d-91e9-ab9d19e2fbad" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="HeatIn.Q">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="a58540d9-40a0-4b9a-b2f1-7cb23c3fe188" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="4cc7ecca-c147-4bcc-b968-4f9731aa6b9d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="04703508-8c9d-4dc6-b0bb-879fcc496e1f" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="Heat_flow">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+            <dataSource xsi:type="esdl:DataSource" id="be027d49-5810-44b8-8b97-7956a5cc241f" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2ccd9b97-a854-4555-a648-5d3c3b021e28" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
+          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="f6afef6a-8493-4201-8536-54e636feb54d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Velocity">
             <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="SPEED" unit="METRE" perTimeUnit="SECOND"/>
+            <dataSource xsi:type="esdl:DataSource" id="dcd5a770-7bea-434f-9cc7-ff33e66e50eb" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
           </profile>
-          <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="17e948ef-9750-4f26-a4c5-a6b43409358d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='Pipe5_ret'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret" field="PostProc.Pressure"/>
         </port>
       </asset>
       <area xsi:type="esdl:Area" name="Area_76a7" id="76a75122-8ea6-472d-8059-374830275d72">
@@ -359,11 +381,13 @@
             </profile>
           </port>
           <port xsi:type="esdl:OutPort" id="d7eb3623-7481-41bb-911d-2dd9bd67db39" name="Out" connectedTo="5e2f4591-43f2-489f-8eb2-63105dbd0355" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="a474076f-2e55-4c88-ba03-88950343bcd5" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="5afa1d37-7aa2-4fba-8d5f-04ddbf4d6dcf" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
               <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+              <dataSource xsi:type="esdl:DataSource" id="34a0442f-675c-4e2a-b0bf-93e2aeb66a24" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
             </profile>
-            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="288c7dbf-4915-4f95-8e1d-c2db6f448386" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="93fd5ddd-85dc-411f-bbaf-cc3fef5d4cd6" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='b0ff0df6-4a47-43a5-a0a5-aa10975c0a5c'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
               <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+              <dataSource xsi:type="esdl:DataSource" id="b0bae1ee-6a23-49cf-a97f-fd1de59f793a" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
             </profile>
           </port>
           <costInformation xsi:type="esdl:CostInformation" id="cd676c1c-6224-406f-a864-3e7ff55265e0">
@@ -387,7 +411,7 @@
             <point xsi:type="esdl:Point" lon="4.380712509155274" lat="51.9963626102222"/>
           </exterior>
         </geometry>
-        <KPIs xsi:type="esdl:KPIs" id="77d92ea4-7d6a-46ce-ae62-751e59ea9c31">
+        <KPIs xsi:type="esdl:KPIs" id="6f2cbce8-b888-4083-bbff-f9fc83f88cea">
           <kpi xsi:type="esdl:DoubleKPI" name="Investment" value="15.0">
             <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" multiplier="MEGA" unit="EURO"/>
           </kpi>
@@ -420,11 +444,13 @@
             </profile>
           </port>
           <port xsi:type="esdl:OutPort" id="ca90e0a5-f866-4ec2-9b3b-07f054f1c2b2" name="Out" connectedTo="35ddd90a-e45c-4afd-95b4-80ce6c927071" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="8d1b685c-6f8c-4400-979e-499e6f56049d" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='08fd3385-681a-4211-a083-51775cc99daa'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="5ee79a57-14f9-44ac-9829-dff45636e6bb" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='08fd3385-681a-4211-a083-51775cc99daa'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
               <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+              <dataSource xsi:type="esdl:DataSource" id="7aa29756-cb12-46ef-ad36-6d12330e63c8" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
             </profile>
-            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="c70dd258-0d1d-440e-8463-306f8182b81b" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='08fd3385-681a-4211-a083-51775cc99daa'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="649f0b71-2806-4daa-a2d2-00f30747373e" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='08fd3385-681a-4211-a083-51775cc99daa'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
               <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+              <dataSource xsi:type="esdl:DataSource" id="5ff8c702-99b9-463a-b594-afb23cd06688" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
             </profile>
           </port>
           <costInformation xsi:type="esdl:CostInformation" id="7eac6b5e-ba11-4ef1-b90e-599dd2690d20">
@@ -446,7 +472,7 @@
             <point xsi:type="esdl:Point" lon="4.372708797454835" lat="51.99272923553559"/>
           </exterior>
         </geometry>
-        <KPIs xsi:type="esdl:KPIs" id="083b8a52-a24b-42f1-aa94-a2ee2f3e4270">
+        <KPIs xsi:type="esdl:KPIs" id="190a2ce0-6885-4e23-aeec-ceba30305379">
           <kpi xsi:type="esdl:DoubleKPI" name="Investment" value="15.0">
             <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" multiplier="MEGA" unit="EURO"/>
           </kpi>
@@ -479,11 +505,13 @@
             </profile>
           </port>
           <port xsi:type="esdl:OutPort" id="0fd050fa-15ff-4f1e-b0bd-ef1823365eaa" name="Out" connectedTo="6d1edc18-1962-4d3d-9882-ef27ae1702e8" carrier="9f6aeb1a-138b-4bb9-9a09-d524e94658e6_ret">
-            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="7f401b13-3a32-4a12-ac93-7c0c7848ab61" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='8fbe3d4e-5d5b-4489-9271-9969c2b9e589'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
+            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="75a95f97-fc6f-40b6-b348-5a4edb38daa0" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='8fbe3d4e-5d5b-4489-9271-9969c2b9e589'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="HeatIn.Q">
               <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="FLOW" unit="CUBIC_METRE" perTimeUnit="SECOND"/>
+              <dataSource xsi:type="esdl:DataSource" id="453b76b8-7444-4bae-b0f6-c7b06a1692d0" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
             </profile>
-            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2d731ba7-032c-4c1f-bdeb-12eddfba332c" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="4c035cf2-c11f-490d-9a06-0b0c652385ee" filters="&quot;assetId&quot;='8fbe3d4e-5d5b-4489-9271-9969c2b9e589'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
+            <profile xsi:type="esdl:InfluxDBProfile" profileType="OUTPUT" id="2a6ba964-dcd3-450b-a01f-193a6450f2ce" startDate="2018-12-31T23:00:00.000000+0000" endDate="2019-12-31T23:00:00.000000+0000" host="omotes_influxdb" port="8096" database="9b1c3932-c766-409f-9b42-7885148fe16b" filters="&quot;assetId&quot;='8fbe3d4e-5d5b-4489-9271-9969c2b9e589'" measurement="9f6aeb1a-138b-4bb9-9a09-d524e94658e6" field="Heat_flow">
               <profileQuantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="POWER" unit="WATT"/>
+              <dataSource xsi:type="esdl:DataSource" id="206bf4ee-89a9-4160-b927-e380863de8c1" name="Optimizer" description="This was created in the optimizer" type="MODEL"/>
             </profile>
           </port>
           <costInformation xsi:type="esdl:CostInformation" id="32e59a3e-fe5e-4201-bbd6-4f26dc4c961e">
@@ -503,7 +531,7 @@
             <point xsi:type="esdl:Point" lon="4.37633514404297" lat="51.98688879367896"/>
           </exterior>
         </geometry>
-        <KPIs xsi:type="esdl:KPIs" id="976a7757-f317-44e4-8f01-96c729aae711">
+        <KPIs xsi:type="esdl:KPIs" id="6376826b-5372-4429-8817-4284755db1d9">
           <kpi xsi:type="esdl:DoubleKPI" name="Investment" value="15.0">
             <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" multiplier="MEGA" unit="EURO"/>
           </kpi>
@@ -527,63 +555,63 @@
           </kpi>
         </KPIs>
       </area>
-      <KPIs xsi:type="esdl:KPIs" id="1e76e46b-38da-4fab-8bab-dc9505586497">
+      <KPIs xsi:type="esdl:KPIs" id="ccb57e42-8991-4971-a491-e6807f5d50c1">
         <kpi xsi:type="esdl:DistributionKPI" name="High level cost breakdown [EUR] (yearly averaged)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
-            <stringItem xsi:type="esdl:StringItem" label="CAPEX" value="2417818.302318088"/>
-            <stringItem xsi:type="esdl:StringItem" label="OPEX" value="3640066.6733969646"/>
+            <stringItem xsi:type="esdl:StringItem" label="CAPEX" value="2405187.921575874"/>
+            <stringItem xsi:type="esdl:StringItem" label="OPEX" value="3635738.0807508114"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="High level cost breakdown [EUR] (30.0 year period)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
-            <stringItem xsi:type="esdl:StringItem" label="CAPEX" value="72534549.06954263"/>
-            <stringItem xsi:type="esdl:StringItem" label="OPEX" value="109202000.20190895"/>
+            <stringItem xsi:type="esdl:StringItem" label="CAPEX" value="72155637.64727622"/>
+            <stringItem xsi:type="esdl:StringItem" label="OPEX" value="109072142.42252435"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="Overall cost breakdown [EUR] (yearly averaged)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
             <stringItem xsi:type="esdl:StringItem" label="Installation" value="433333.3333333333"/>
-            <stringItem xsi:type="esdl:StringItem" label="Investment" value="1984484.9689847543"/>
-            <stringItem xsi:type="esdl:StringItem" label="Variable OPEX" value="1200009.1951799116"/>
-            <stringItem xsi:type="esdl:StringItem" label="Fixed OPEX" value="2440057.478217053"/>
+            <stringItem xsi:type="esdl:StringItem" label="Investment" value="1971854.588242541"/>
+            <stringItem xsi:type="esdl:StringItem" label="Variable OPEX" value="1197440.1930403188"/>
+            <stringItem xsi:type="esdl:StringItem" label="Fixed OPEX" value="2438297.8877104926"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="Overall cost breakdown [EUR] (30.0 year period)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
             <stringItem xsi:type="esdl:StringItem" label="Installation" value="13000000.0"/>
-            <stringItem xsi:type="esdl:StringItem" label="Investment" value="59534549.06954263"/>
-            <stringItem xsi:type="esdl:StringItem" label="Variable OPEX" value="36000275.85539734"/>
-            <stringItem xsi:type="esdl:StringItem" label="Fixed OPEX" value="73201724.3465116"/>
+            <stringItem xsi:type="esdl:StringItem" label="Investment" value="59155637.64727623"/>
+            <stringItem xsi:type="esdl:StringItem" label="Variable OPEX" value="35923205.79120956"/>
+            <stringItem xsi:type="esdl:StringItem" label="Fixed OPEX" value="73148936.63131478"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="CAPEX breakdown [EUR] (30.0 year period)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
-            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource" value="16100143.695542634"/>
-            <stringItem xsi:type="esdl:StringItem" label="Pipe" value="8434405.374"/>
+            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource" value="16095744.71927623"/>
+            <stringItem xsi:type="esdl:StringItem" label="Pipe" value="8059892.928000001"/>
             <stringItem xsi:type="esdl:StringItem" label="HeatingDemand" value="48000000.0"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="OPEX breakdown [EUR] (yearly averaged)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
-            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource" value="3640066.6733969646"/>
+            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource" value="3635738.0807508114"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="OPEX breakdown [EUR] (30.0 year period)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="COST" unit="EURO"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
-            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource" value="109202000.20190893"/>
+            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource" value="109072142.42252435"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="Energy production [Wh] (yearly averaged)">
           <quantityAndUnit xsi:type="esdl:QuantityAndUnitType" physicalQuantity="ENERGY" unit="WATTHOUR"/>
           <distribution xsi:type="esdl:StringLabelDistribution">
-            <stringItem xsi:type="esdl:StringItem" label="ResidualHeatSource_72d7" value="12000091951.799114"/>
+            <stringItem xsi:type="esdl:StringItem" label="72d74fb5-134f-4bfb-829e-220ab76a8a7b" value="11974401930.403189"/>
           </distribution>
         </kpi>
         <kpi xsi:type="esdl:DistributionKPI" name="Area_76a7: Asset cost breakdown [EUR]">
