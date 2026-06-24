@@ -36,6 +36,11 @@ services:
 
   omotes_influxdb:
     image: influxdb:1.7
+    deploy:
+      resources:
+        limits:
+          memory: 8gb
+    memswap_limit: 8gb
     ports:
       - "${INFLUXDB_PORT}:${INFLUXDB_PORT}"
       - "${INFLUXDB_RPC_PORT}:${INFLUXDB_RPC_PORT}"
