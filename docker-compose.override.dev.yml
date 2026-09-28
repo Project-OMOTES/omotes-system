@@ -11,9 +11,23 @@ services:
     build:
       context: ..
       dockerfile: optimizer-worker/dev.Dockerfile
+    working_dir: /workspace/optimizer-worker/src
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../:/workspace:ro
+    environment:
+      PREFECT_USE_LOCAL_CODE_AND_IMAGE: "true"
+      PREFECT_USE_LOCAL_SDK_AND_MESIDO: "true"
   
   omotes-deploy-simulator:
     image: omotes-simulator-dev
     build:
       context: ..
       dockerfile: simulator-worker/dev.Dockerfile
+    working_dir: /workspace/simulator-worker/src
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../:/workspace:ro
+    environment:
+      PREFECT_USE_LOCAL_CODE_AND_IMAGE: "true"
+      PREFECT_USE_LOCAL_SDK: "true"

@@ -162,7 +162,7 @@ services:
     restart: unless-stopped
 
   omotes-orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:2.0.3
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.0
     environment:
       LOG_LEVEL: INFO
       PREFECT_API_URL: http://omotes-prefect-server:4200/api
@@ -171,6 +171,14 @@ services:
       MINIO_PORT: 9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET: ${MINIO_SECRET}
+      INFLUX_HOST: omotes_influxdb
+      INFLUX_PORT: ${INFLUXDB_PORT}
+      INFLUX_USERNAME: ${INFLUXDB_ADMIN_USER}
+      INFLUX_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
+      POSTGRES_HOST: omotes_postgres
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USERNAME: ${POSTGRES_TIMESERIES_RW_USER_NAME}
+      POSTGRES_PASSWORD: ${POSTGRES_TIMESERIES_RW_USER_PASSWORD}
       WORKFLOW_SETTINGS_FILE: /app/config/workflow_config.json
     volumes:
       - ${WORKFLOW_SETTINGS_FILE:?}:/app/config/workflow_config.json
