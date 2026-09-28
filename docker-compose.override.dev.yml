@@ -1,5 +1,11 @@
 services:
 
+  omotes-orchestrator-migrate:
+    image: omotes-orchestrator-dev
+    build:
+      context: ..
+      dockerfile: orchestrator/dev.Dockerfile
+
   omotes-orchestrator:
     image: omotes-orchestrator-dev
     build:

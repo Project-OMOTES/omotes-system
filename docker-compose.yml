@@ -8,6 +8,29 @@ volumes:
   postgres_data:
   influxdb_data:
 
+x-orchestrator-environment: &orchestrator-environment
+  LOG_LEVEL: INFO
+  PREFECT_API_URL: http://omotes-prefect-server:4200/api
+  PREFECT_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
+  MINIO_HOST: omotes-minio
+  MINIO_PORT: 9000
+  MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+  MINIO_SECRET: ${MINIO_SECRET}
+  INFLUX_HOST: omotes_influxdb
+  INFLUX_PORT: ${INFLUXDB_PORT}
+  INFLUX_USERNAME: ${INFLUXDB_ADMIN_USER}
+  INFLUX_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
+  POSTGRES_HOST: omotes_postgres
+  POSTGRES_PORT: ${POSTGRES_PORT}
+  POSTGRES_USERNAME: ${POSTGRES_TIMESERIES_RW_USER_NAME}
+  POSTGRES_PASSWORD: ${POSTGRES_TIMESERIES_RW_USER_PASSWORD}
+  ORCHESTRATOR_DATABASE_HOST: omotes_postgres
+  ORCHESTRATOR_DATABASE_PORT: ${POSTGRES_PORT}
+  ORCHESTRATOR_DATABASE_NAME: omotes_orchestrator
+  ORCHESTRATOR_DATABASE_USERNAME: ${POSTGRES_ORCHESTRATOR_USER_NAME}
+  ORCHESTRATOR_DATABASE_PASSWORD: ${POSTGRES_ORCHESTRATOR_USER_PASSWORD}
+  WORKFLOW_SETTINGS_FILE: /app/config/workflow_config.json
+
 services:
   omotes_influxdb:
     image: influxdb:1.7
@@ -64,6 +87,8 @@ services:
       TIMESERIES_RO_USER_PASSWORD: ${POSTGRES_TIMESERIES_RO_USER_PASSWORD}
       PREFECT_USER_NAME: ${POSTGRES_PREFECT_USER_NAME}
       PREFECT_USER_PASSWORD: ${POSTGRES_PREFECT_USER_PASSWORD}
+      ORCHESTRATOR_USER_NAME: ${POSTGRES_ORCHESTRATOR_USER_NAME}
+      ORCHESTRATOR_USER_PASSWORD: ${POSTGRES_ORCHESTRATOR_USER_PASSWORD}
 
       LOG_LEVEL: ${LOG_LEVEL}
     healthcheck:
@@ -161,29 +186,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  omotes-orchestrator-migrate:
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.1
+    command: ["alembic", "upgrade", "head"]
+    environment: *orchestrator-environment
+    networks:
+      - omotes
+    depends_on:
+      omotes_postgres:
+        condition: service_healthy
+    restart: "no"
+
   omotes-orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.0
-    environment:
-      LOG_LEVEL: INFO
-      PREFECT_API_URL: http://omotes-prefect-server:4200/api
-      PREFECT_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
-      MINIO_HOST: omotes-minio
-      MINIO_PORT: 9000
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET: ${MINIO_SECRET}
-      INFLUX_HOST: omotes_influxdb
-      INFLUX_PORT: ${INFLUXDB_PORT}
-      INFLUX_USERNAME: ${INFLUXDB_ADMIN_USER}
-      INFLUX_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
-      POSTGRES_HOST: omotes_postgres
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_USERNAME: ${POSTGRES_TIMESERIES_RW_USER_NAME}
-      POSTGRES_PASSWORD: ${POSTGRES_TIMESERIES_RW_USER_PASSWORD}
-      WORKFLOW_SETTINGS_FILE: /app/config/workflow_config.json
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.1
+    environment: *orchestrator-environment
     volumes:
       - ${WORKFLOW_SETTINGS_FILE:?}:/app/config/workflow_config.json
     networks:
       - omotes
+    depends_on:
+      omotes-orchestrator-migrate:
+        condition: service_completed_successfully
     ports:
       - "9200:9200"
     healthcheck:
@@ -202,6 +225,7 @@ services:
       LOG_LEVEL: INFO
       PREFECT_API_URL: http://omotes-prefect-server:4200/api
       PREFECT_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
+      ORCHESTRATOR_API_URL: http://omotes-orchestrator:9200
       PREFECT_API_URL_FOR_WORKER: http://omotes-prefect-server:4200/api
       PREFECT_WORK_POOL_NAME: "docker-worker"
       OPTIMIZER_WORKER_VERSION: ${OPTIMIZER_WORKER_VERSION}
@@ -235,6 +259,7 @@ services:
       LOG_LEVEL: INFO
       PREFECT_API_URL: http://omotes-prefect-server:4200/api
       PREFECT_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
+      ORCHESTRATOR_API_URL: http://omotes-orchestrator:9200
       PREFECT_API_URL_FOR_WORKER: http://omotes-prefect-server:4200/api
       PREFECT_WORK_POOL_NAME: "docker-worker"
       SIMULATOR_WORKER_VERSION: ${SIMULATOR_WORKER_VERSION}

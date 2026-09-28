@@ -149,6 +149,7 @@ def retrieve_esdl_file(path_str: str) -> str:
 ATTRIBUTE_REGEX_TO_IGNORE = {
     "id": "[a-z0-9-]+",  # uuid
     "database": "[a-z0-9-]+",  # uuid
+    "schema": "[a-z0-9-]+",  # uuid
     "reference": "[a-z0-9-]+",  # uuid
     "tableName": "[a-z0-9-]+",  # uuid
     "configuration": "[a-z0-9-]+",  # uuid
