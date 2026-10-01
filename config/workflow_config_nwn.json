@@ -20,19 +20,19 @@
   {
     "workflow_type_name": "grow_optimizer_no_heat_losses_gurobi",
     "workflow_type_description_name": "Draft Design - Quickscan Validation - Gurobi",
-    "prefect_flow_name": "omotes-optimizer",
+    "prefect_flow_name": "omotes-optimizer-gurobi",
     "memory_limit": "8Gi"
   },
   {
     "workflow_type_name": "grow_optimizer_default_gurobi",
     "workflow_type_description_name": "Draft Design - Optimization - Gurobi",
-    "prefect_flow_name": "omotes-optimizer",
+    "prefect_flow_name": "omotes-optimizer-gurobi",
     "memory_limit": "8Gi"
   },
   {
     "workflow_type_name": "grow_optimizer_eac_gurobi",
     "workflow_type_description_name": "Draft Design - Optimization - EAC - Gurobi",
-    "prefect_flow_name": "omotes-optimizer",
+    "prefect_flow_name": "omotes-optimizer-gurobi",
     "memory_limit": "8Gi"
   },
   {

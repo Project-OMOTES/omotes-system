@@ -187,7 +187,7 @@ services:
     restart: unless-stopped
 
   omotes-orchestrator-migrate:
-    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.1
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.2
     command: ["alembic", "upgrade", "head"]
     environment: *orchestrator-environment
     networks:
@@ -198,7 +198,7 @@ services:
     restart: "no"
 
   omotes-orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.1
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.2
     environment: *orchestrator-environment
     volumes:
       - ${WORKFLOW_SETTINGS_FILE:?}:/app/config/workflow_config.json
@@ -231,6 +231,7 @@ services:
       OPTIMIZER_WORKER_VERSION: ${OPTIMIZER_WORKER_VERSION}
       ESDL_OUTPUT_PROFILES_TYPE: ${OPTIMIZER_ESDL_OUTPUT_PROFILES_TYPE}
       PREFECT_FLOW_MAX_CONCURRENT_RUNS: ${OPTIMIZER_FLOW_MAX_CONCURRENT_RUNS}
+      PREFECT_GUROBI_MAX_CONCURRENT_RUNS: ${OPTIMIZER_GUROBI_MAX_CONCURRENT_RUNS:-1}
       PREFECT_FLOW_TIMEOUT_SECONDS: ${OPTIMIZER_PREFECT_FLOW_TIMEOUT_SECONDS}
       DB_HOSTNAME: omotes_postgres
       DB_PORT: ${POSTGRES_PORT}

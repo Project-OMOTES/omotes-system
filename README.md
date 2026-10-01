@@ -21,7 +21,10 @@ The most relevant env vars for optimzer/simulator control:
 - `WORKFLOW_SETTINGS_FILE`: pointing to the workflow definitions (in the [config](config) folder)
 - `OPTIMIZER_WORKER_VERSION`: optimizer-worker version to be deployed
 - `SIMULATOR_WORKER_VERSION`: simulator-worker version to be deployed
-- `OPTIMIZER_FLOW_MAX_CONCURRENT_RUNS`: maximum of concurrent optimizer runs
+- `OPTIMIZER_FLOW_MAX_CONCURRENT_RUNS`: maximum of concurrent optimizer runs (non-Gurobi workflows), over all deployed
+  optimizer versions
+- `OPTIMIZER_GUROBI_MAX_CONCURRENT_RUNS`: maximum of concurrent Gurobi optimizer runs over all deployed versions, set to
+  the number of Gurobi licenses (default `1`), see [Gurobi](#gurobi)
 - `SIMULATOR_FLOW_MAX_CONCURRENT_RUNS`: maximum of concurrent simulator runs
 - `OPTIMIZER_PREFECT_FLOW_TIMEOUT_SECONDS`: maximum duration of an optimizer run
 - `SIMULATOR_PREFECT_FLOW_TIMEOUT_SECONDS`: maximum duration of a simulator run
@@ -34,6 +37,24 @@ Each workflow in the `WORKFLOW_SETTINGS_FILE` contains `workflow_type_name`,`wor
 or `1000000`.\
 `workflow_parameters` is a dict in jsonforms format, see
 [config/workflow_config_example.json](config/workflow_config_example.json) and https://jsonforms.io/.
+
+### Gurobi
+
+The Gurobi workflows (`*_gurobi` in [config/workflow_config_nwn.json](config/workflow_config_nwn.json)) run on the
+`omotes-optimizer-gurobi` deployment and need a Gurobi WLS license, stored as a Prefect Secret block. Create it once per
+Prefect server (otherwise Gurobi runs fail with `Unable to find block document named gurobi-wls-secret`):
+
+1. Open the Prefect UI (locally http://localhost:4200) and go to **Blocks**.
+2. Click **+**, select **Secret** and click **Create**.
+3. Set **Block Name** to `gurobi-wls-secret`.
+4. Set **Value** to the full content of the WLS license file (`gurobi.lic`, with `WLSACCESSID`, `WLSSECRET` and
+   `LICENSEID` lines) and click **Create**.
+
+With the current license only one Gurobi run can be active at a time. Each optimizer deployment runs on its own work
+queue, `omotes-optimizer` and `omotes-optimizer-gurobi`, limited by `OPTIMIZER_FLOW_MAX_CONCURRENT_RUNS` and
+`OPTIMIZER_GUROBI_MAX_CONCURRENT_RUNS` over all deployed versions. Runs above the limit wait in the queue (state
+`Scheduled`/`Late`) without starting a container. The limits are visible in the Prefect UI under **Work Pools** >
+`docker-worker` > **Work Queues**, but are reset to the `.env` values on each optimizer deployment.
 
 ### Start
 
