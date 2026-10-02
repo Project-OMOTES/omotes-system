@@ -73,10 +73,11 @@ The same scripts work on a Linux VM or on Windows through Docker Desktop with WS
 shell (WSL2 on Windows). Ensure `.env` contains `VMUI_USERNAME` and `VMUI_PASSWORD`; `./scripts/generate-env.sh`
 creates a new `.env` with random passwords.
 
-Start monitoring:
+Start monitoring; optionally pass `-n` to attach VictoriaMetrics to an existing external Docker network as well as
+`omotes`:
 
 ```sh
-./scripts/monitor-start.sh
+./scripts/monitor-start.sh [-n <NETWORK_NAME>]
 ```
 
 Open [VMUI](http://localhost:8428/vmui/#/dashboards?g0.range_input=1h&g0.relative_time=last_1_hour). Sign in with the
