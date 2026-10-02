@@ -67,30 +67,6 @@ Start the omotes system only, or including the deployment of the specified versi
 ./scripts/start-and-deploy.sh [--dev] [-n <NETWORK_NAME>]
 ```
 
-#### Monitoring
-
-The same scripts work on a Linux VM or on Windows through Docker Desktop with WSL2 integration. Run them from a Bash
-shell (WSL2 on Windows). Ensure `.env` contains `VMUI_USERNAME` and `VMUI_PASSWORD`; `./scripts/generate-env.sh`
-creates a new `.env` with random passwords.
-
-Start monitoring; optionally pass `-n` to attach VictoriaMetrics to an existing external Docker network as well as
-`omotes`:
-
-```sh
-./scripts/metrics-start.sh [-n <NETWORK_NAME>]
-```
-
-Open [VMUI](http://localhost:8428/vmui/#/dashboards?g0.range_input=1h&g0.relative_time=last_1_hour). Sign in with the
-credentials from `.env`. The dashboards show Docker-container memory and CPU, host memory and CPU, and container
-diagnostics. Metrics are retained for one week in the `victoria_metrics_data` volume. Telegraf reads the Docker socket,
-so treat it as privileged host access. For public access, use HTTPS; Basic Auth alone does not encrypt traffic.
-
-Stop monitoring without deleting its data:
-
-```sh
-./scripts/metrics-stop.sh
-```
-
 Pass `-n <NETWORK_NAME>` to also attach influxdb, postgres and the orchestrator to an external docker network with that
 name (it must already exist), for example `./scripts/start.sh -n mapeditor-net`. Pass `--dev` to run with local code
 instead of published images, see [Start dev](#start-dev).
@@ -157,6 +133,28 @@ backup/docker_volume_restore.sh <path/to/backup_file.tar.gz> <target_volume_name
 ```
 
 If the target volume already exists, its current contents are overwritten after confirmation.
+
+### Metrics monitoring
+
+To start monitoring memory and CPU metrics monitoring (ensure `.env` contains `VMUI_USERNAME` and `VMUI_PASSWORD`,
+optionally pass `-n` to attach VictoriaMetrics to other network (for mapeditor test/prod envs 'mapeditor-net' is needed
+for Caddy):
+
+```sh
+./scripts/metrics-start.sh [-n <NETWORK_NAME>]
+```
+
+Open [VMUI](http://localhost:8428/vmui/#/dashboards). Sign in with the credentials from `.env`. The dashboards show
+Docker-container memory and CPU, host memory and CPU, and container diagnostics. Metrics are retained for one week in
+the `victoria_metrics_data` volume.\
+Adjust the time range if needed and to show all containers in graph to to Settings - Series limits by tabs - Graph and
+set to '50'.
+
+Stop monitoring without deleting its data:
+
+```sh
+./scripts/metrics-stop.sh
+```
 
 ## Development
 
