@@ -48,6 +48,7 @@ services:
           -selfScrapeInterval=10s \
           -promscrape.config=/etc/victoria-metrics/promscrape.yml \
           -vmui.customDashboardsPath=/etc/victoria-metrics/dashboards \
+          -vmui.defaultTimezone=Europe/Amsterdam \
           -httpAuth.username="$${VMUI_USERNAME}" \
           -httpAuth.password="$${VMUI_PASSWORD}"
     environment:

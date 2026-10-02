@@ -6,7 +6,6 @@ networks:
 services:
   victoria-metrics:
     networks:
-      - omotes
       - external-net
 
   omotes_influxdb:

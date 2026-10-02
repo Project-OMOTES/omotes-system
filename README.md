@@ -77,7 +77,7 @@ Start monitoring; optionally pass `-n` to attach VictoriaMetrics to an existing 
 `omotes`:
 
 ```sh
-./scripts/monitor-start.sh [-n <NETWORK_NAME>]
+./scripts/metrics-start.sh [-n <NETWORK_NAME>]
 ```
 
 Open [VMUI](http://localhost:8428/vmui/#/dashboards?g0.range_input=1h&g0.relative_time=last_1_hour). Sign in with the
@@ -88,7 +88,7 @@ so treat it as privileged host access. For public access, use HTTPS; Basic Auth 
 Stop monitoring without deleting its data:
 
 ```sh
-./scripts/monitor-stop.sh
+./scripts/metrics-stop.sh
 ```
 
 Pass `-n <NETWORK_NAME>` to also attach influxdb, postgres and the orchestrator to an external docker network with that
