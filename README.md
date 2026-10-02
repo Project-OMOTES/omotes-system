@@ -28,6 +28,8 @@ The most relevant env vars for optimzer/simulator control:
 - `SIMULATOR_FLOW_MAX_CONCURRENT_RUNS`: maximum of concurrent simulator runs
 - `OPTIMIZER_PREFECT_FLOW_TIMEOUT_SECONDS`: maximum duration of an optimizer run
 - `SIMULATOR_PREFECT_FLOW_TIMEOUT_SECONDS`: maximum duration of a simulator run
+- `PREFECT_DOCKER_WORKER_NETWORKS`: comma-separated Docker network names for flow-run containers (default: `omotes`),
+  for example `omotes,shared-network`
 - `MINIO_EXTERNAL_URL`: the minio api external url used for the presigned url used in the prefect UI. For instance
   `https://minio-api.test.nwn-design-toolkit.nl/` which points to the minio `9000` port (`9001` is for the UI). It must
   include `http(s)`.

@@ -44,13 +44,13 @@ services:
     environment:
       # Ephemeral flow-run containers must join the renamed network below, not the
       # literal "omotes" network default (which would belong to a different stack).
-      PREFECT_DOCKER_WORKER_NETWORK: omotes-system-tests
+      PREFECT_DOCKER_WORKER_NETWORKS: omotes-system-tests
 
   omotes-deploy-simulator:
     environment:
       # Ephemeral flow-run containers must join the renamed network below, not the
       # literal "omotes" network default (which would belong to a different stack).
-      PREFECT_DOCKER_WORKER_NETWORK: omotes-system-tests
+      PREFECT_DOCKER_WORKER_NETWORKS: omotes-system-tests
 
 networks:
   # The base compose file pins this network to the fixed name "omotes", which would
