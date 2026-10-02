@@ -1,0 +1,79 @@
+{
+	"title": "Container diagnostics",
+	"rows": [
+		{
+			"title": "CPU throttling",
+			"panels": [
+				{
+					"title": "Prefect jobs throttled periods",
+					"description": "Percentage of CPU scheduling periods in which Prefect containers were throttled.",
+					"width": 12,
+					"unit": "%",
+					"expr": [
+						"100 * rate(docker_container_cpu_throttling_throttled_periods{cpu=\"cpu-total\",io_prefect_flow_run_id!=\"\",container_status=\"running\"}[1m]) / clamp_min(rate(docker_container_cpu_throttling_periods{cpu=\"cpu-total\",io_prefect_flow_run_id!=\"\",container_status=\"running\"}[1m]), 1e-9)"
+					],
+					"alias": [
+						"{{io_prefect_flow_run_name}} | {{io_prefect_deployment_name}} | {{io_prefect_flow_run_id}}"
+					]
+				},
+				{
+					"title": "All containers throttled periods",
+					"description": "Percentage of CPU scheduling periods in which containers were throttled.",
+					"width": 12,
+					"unit": "%",
+					"expr": [
+						"100 * rate(docker_container_cpu_throttling_throttled_periods{cpu=\"cpu-total\",container_status=\"running\"}[1m]) / clamp_min(rate(docker_container_cpu_throttling_periods{cpu=\"cpu-total\",container_status=\"running\"}[1m]), 1e-9)"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}}"
+					]
+				}
+			]
+		},
+		{
+			"title": "Container status",
+			"panels": [
+				{
+					"title": "Container restart count",
+					"description": "Cumulative restart count reported by Docker for containers still present in the daemon.",
+					"width": 12,
+					"expr": [
+						"docker_container_status_restart_count"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}}"
+					]
+				},
+				{
+					"title": "Exited container codes",
+					"description": "Exit codes for containers that remain in Docker after stopping.",
+					"width": 12,
+					"expr": [
+						"docker_container_status_exitcode{container_status=\"exited\"}"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}}"
+					]
+				}
+			]
+		},
+		{
+			"title": "Network I/O",
+			"panels": [
+				{
+					"title": "Container network throughput",
+					"width": 12,
+					"unit": "MB/s",
+					"expr": [
+						"rate(docker_container_net_rx_bytes{container_status=\"running\"}[1m]) / 1e6",
+						"rate(docker_container_net_tx_bytes{container_status=\"running\"}[1m]) / 1e6"
+					],
+					"alias": [
+						"{{container_name}} RX {{network}}",
+						"{{container_name}} TX {{network}}"
+					]
+				}
+			]
+		}
+	]
+}

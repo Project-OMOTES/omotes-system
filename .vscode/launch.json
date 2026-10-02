@@ -2,18 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run optimizer.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/example_sdk_client/optimizer.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/example_sdk_client",
-            "justMyCode": true,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/example_sdk_client"
-            }
-        },
-        {
             "name": "test__grow_optimizer_default__happy_path",
             "type": "debugpy",
             "request": "launch",
@@ -28,7 +16,51 @@
             "cwd": "${workspaceFolder}/system_tests/src",
             "envFile": "${workspaceFolder}/.env.test",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/system_tests"
+                "PYTHONPATH": "${workspaceFolder}/system_tests",
+                "ORCHESTRATOR_PORT": "9210",
+                "INFLUXDB_PORT": "8196"
+            }
+        },
+        {
+            "name": "test__simulator__kpis_present_in_output",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "test_workflows_steps.py::TestWorkflows::test__simulator__kpis_present_in_output",
+                "-v",
+                "-s"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/system_tests/src",
+            "envFile": "${workspaceFolder}/.env.test",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/system_tests",
+                "ORCHESTRATOR_PORT": "9210",
+                "INFLUXDB_PORT": "8196"
+            }
+        },
+        {
+            "name": "test__all",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                "test_workflows_steps.py::TestWorkflows",
+                "-v",
+                "-s",
+                "-n",
+                "5"
+            ],
+            "jinja": true,
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/system_tests/src",
+            "envFile": "${workspaceFolder}/.env.test",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/system_tests",
+                "ORCHESTRATOR_PORT": "9210",
+                "INFLUXDB_PORT": "8196"
             }
         }
     ]
