@@ -67,6 +67,29 @@ Start the omotes system only, or including the deployment of the specified versi
 ./scripts/start-and-deploy.sh [--dev] [-n <NETWORK_NAME>]
 ```
 
+#### Monitoring
+
+The same scripts work on a Linux VM or on Windows through Docker Desktop with WSL2 integration. Run them from a Bash
+shell (WSL2 on Windows). Ensure `.env` contains `VMUI_USERNAME` and `VMUI_PASSWORD`; `./scripts/generate-env.sh`
+creates a new `.env` with random passwords.
+
+Start monitoring:
+
+```sh
+./scripts/monitor-start.sh
+```
+
+Open [VMUI](http://localhost:8428/vmui/#/dashboards?g0.range_input=1h&g0.relative_time=last_1_hour). Sign in with the
+credentials from `.env`. The dashboards show Docker-container memory and CPU, host memory and CPU, and container
+diagnostics. Metrics are retained for one week in the `victoria_metrics_data` volume. Telegraf reads the Docker socket,
+so treat it as privileged host access. For public access, use HTTPS; Basic Auth alone does not encrypt traffic.
+
+Stop monitoring without deleting its data:
+
+```sh
+./scripts/monitor-stop.sh
+```
+
 Pass `-n <NETWORK_NAME>` to also attach influxdb, postgres and the orchestrator to an external docker network with that
 name (it must already exist), for example `./scripts/start.sh -n mapeditor-net`. Pass `--dev` to run with local code
 instead of published images, see [Start dev](#start-dev).

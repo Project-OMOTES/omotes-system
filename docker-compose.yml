@@ -7,6 +7,7 @@ volumes:
   minio_data:
   postgres_data:
   influxdb_data:
+  victoria_metrics_data:
 
 x-orchestrator-environment: &orchestrator-environment
   LOG_LEVEL: INFO
@@ -32,6 +33,46 @@ x-orchestrator-environment: &orchestrator-environment
   WORKFLOW_SETTINGS_FILE: /app/config/workflow_config.json
 
 services:
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:v1.153.0
+    profiles:
+      - monitoring
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        : "$${VMUI_USERNAME:?Set VMUI_USERNAME in .env before starting monitoring}"
+        : "$${VMUI_PASSWORD:?Set VMUI_PASSWORD in .env before starting monitoring}"
+        exec /victoria-metrics-prod \
+          -storageDataPath=/victoria-metrics-data \
+          -retentionPeriod=1w \
+          -selfScrapeInterval=10s \
+          -promscrape.config=/etc/victoria-metrics/promscrape.yml \
+          -vmui.customDashboardsPath=/etc/victoria-metrics/dashboards \
+          -httpAuth.username="$${VMUI_USERNAME}" \
+          -httpAuth.password="$${VMUI_PASSWORD}"
+    environment:
+      VMUI_USERNAME: ${VMUI_USERNAME:-}
+      VMUI_PASSWORD: ${VMUI_PASSWORD:-}
+    ports:
+      - "8428:8428"
+    networks:
+      - omotes
+    volumes:
+      - victoria_metrics_data:/victoria-metrics-data
+      - ./monitoring/victoria-metrics-scrape.yml:/etc/victoria-metrics/promscrape.yml:ro
+      - ./monitoring/vmui-dashboards:/etc/victoria-metrics/dashboards:ro
+
+  telegraf-docker-metrics:
+    image: telegraf:1.40.1-alpine
+    profiles:
+      - monitoring
+    user: "1000:${DOCKER_SOCKET_GID:-1001}"
+    networks:
+      - omotes
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./monitoring/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+
   omotes_influxdb:
     image: influxdb:1.7
     ports:
