@@ -1,5 +1,5 @@
 {
-	"title": "CPU: Containers",
+	"title": "CPU",
 	"rows": [
 		{
 			"title": "Prefect jobs",
@@ -49,6 +49,35 @@
 					"unit": "%",
 					"expr": [
 						"docker_container_cpu_usage_percent{container_status=\"running\"}"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}}"
+					]
+				}
+			]
+		},
+		{
+			"title": "CPU throttling",
+			"panels": [
+				{
+					"title": "Prefect job CPU throttling",
+					"description": "Percentage of CPU scheduling periods in which running Prefect containers were throttled.",
+					"width": 12,
+					"unit": "%",
+					"expr": [
+						"100 * rate(docker_container_cpu_throttling_throttled_periods{cpu=\"cpu-total\",io_prefect_flow_run_id!=\"\",container_status=\"running\"}[1m]) / clamp_min(rate(docker_container_cpu_throttling_periods{cpu=\"cpu-total\",io_prefect_flow_run_id!=\"\",container_status=\"running\"}[1m]), 1e-9)"
+					],
+					"alias": [
+						"{{io_prefect_flow_run_name}} | {{io_prefect_deployment_name}} | {{io_prefect_flow_run_id}}"
+					]
+				},
+				{
+					"title": "All container CPU throttling",
+					"description": "Percentage of CPU scheduling periods in which containers were throttled.",
+					"width": 12,
+					"unit": "%",
+					"expr": [
+						"100 * rate(docker_container_cpu_throttling_throttled_periods{cpu=\"cpu-total\",container_status=\"running\"}[1m]) / clamp_min(rate(docker_container_cpu_throttling_periods{cpu=\"cpu-total\",container_status=\"running\"}[1m]), 1e-9)"
 					],
 					"alias": [
 						"{{container_name}} | {{io_prefect_flow_run_id}}"

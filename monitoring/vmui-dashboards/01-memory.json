@@ -1,5 +1,5 @@
 {
-	"title": "Memory: Containers",
+	"title": "Memory",
 	"rows": [
 		{
 			"title": "Prefect jobs",
@@ -19,11 +19,11 @@
 			]
 		},
 		{
-			"title": "Docker host memory",
+			"title": "Host memory",
 			"panels": [
 				{
-					"title": "Container usage vs available memory",
-					"description": "Summed Docker container memory compared with available/total memory on the Docker host (Docker Desktop's Linux VM).",
+					"title": "Container usage vs host memory",
+					"description": "Sum of memory used by running Docker containers, compared with available and total memory on the Docker host (Docker Desktop's Linux VM).",
 					"width": 12,
 					"unit": "GB",
 					"expr": [
