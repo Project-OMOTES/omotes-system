@@ -3,22 +3,43 @@ name: Run system checks (linux)
 on: [push]
 
 jobs:
-  test_system:
-    name: Run system tests
+  lint_and_typecheck_system_tests:
+    name: Lint and type check system_tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+    - name: Install just
+      uses: taiki-e/install-action@just
+    - name: Install dependencies
+      run: just install
+    - name: Run linter
+      run: just lint
+    - name: Run security checks
+      run: just security
+    - name: Check formatting
+      run: just format-check
+    - name: Run type checker
+      run: just typecheck
+
+  system_tests:
+    name: System Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: [ "3.11" ]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    - name: run system tests
-      run: |
-        ./scripts/test_system.sh
+    - name: Install just
+      uses: taiki-e/install-action@just
+    - name: Run system tests
+      run: just test
     - name: upload optimizer output ESDLs
       if: always()
       uses: actions/upload-artifact@v4

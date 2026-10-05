@@ -1,0 +1,32 @@
+{
+  "title": "Container status",
+  "rows": [
+    {
+      "title": "Restarts and exits",
+      "panels": [
+        {
+          "title": "Container restart count",
+          "description": "Cumulative restart count reported by Docker for containers still present in the daemon.",
+          "width": 12,
+          "expr": [
+            "docker_container_status_restart_count"
+          ],
+          "alias": [
+            "{{container_name}} | {{io_prefect_flow_run_id}}"
+          ]
+        },
+        {
+          "title": "Exited container codes",
+          "description": "Exit codes for containers that remain in Docker after stopping.",
+          "width": 12,
+          "expr": [
+            "docker_container_status_exitcode{container_status=\"exited\"}"
+          ],
+          "alias": [
+            "{{container_name}} | {{io_prefect_flow_run_id}}"
+          ]
+        }
+      ]
+    }
+  ]
+}

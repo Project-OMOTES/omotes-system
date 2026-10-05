@@ -1,0 +1,60 @@
+{
+	"title": "Memory",
+	"rows": [
+		{
+			"title": "Prefect jobs",
+			"panels": [
+				{
+					"title": "Prefect job memory usage",
+					"description": "Memory usage for Prefect jobs. Hover labels show run name, deployment name, and flow-run ID.",
+					"width": 12,
+					"unit": "GB",
+					"expr": [
+						"docker_container_mem_usage{io_prefect_flow_run_id!=\"\",container_status=\"running\"} / 1e9"
+					],
+					"alias": [
+						"{{io_prefect_flow_run_name}} | {{io_prefect_deployment_name}} | {{io_prefect_flow_run_id}}"
+					]
+				}
+			]
+		},
+		{
+			"title": "Host memory",
+			"panels": [
+				{
+					"title": "Container usage vs host memory",
+					"description": "Sum of memory used by running Docker containers, compared with available and total memory on the Docker host (Docker Desktop's Linux VM).",
+					"width": 12,
+					"unit": "GB",
+					"expr": [
+						"sum(docker_container_mem_usage{container_status=\"running\"}) / 1e9",
+						"mem_available / 1e9",
+						"mem_total / 1e9"
+					],
+					"alias": [
+						"Container usage sum",
+						"Host available",
+						"Host total"
+					]
+				}
+			]
+		},
+		{
+			"title": "All containers",
+			"panels": [
+				{
+					"title": "All container memory usage",
+					"description": "Memory usage sampled from Docker for all running containers. Hover labels show container name and flow-run ID when present.",
+					"width": 12,
+					"unit": "GB",
+					"expr": [
+						"docker_container_mem_usage{container_status=\"running\"} / 1e9"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}}"
+					]
+				}
+			]
+		}
+	]
+}

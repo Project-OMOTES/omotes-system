@@ -8,4 +8,4 @@ if [[ -n "$VERSION" ]]; then
   exit 1
 fi
 
-docker compose "${COMPOSE_FILES[@]}" up "${BUILD_ARG[@]}" --wait
+docker compose "${COMPOSE_FILES[@]}" --profile deploy-optimizer --profile deploy-simulator up "${BUILD_ARG[@]}" --wait
