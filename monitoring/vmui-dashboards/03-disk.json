@@ -6,13 +6,13 @@
 			"panels": [
 				{
 					"title": "Docker VM root filesystem capacity",
-					"description": "Used, free, and total space reported for Telegraf's root filesystem. Docker container and volume storage shown below is included in this total, not additive to it.",
+					"description": "Used, free, and total space reported for the Linux VM root filesystem. Docker container and volume storage shown below is included in this total, not additive to it.",
 					"width": 12,
 					"unit": "GB",
 					"expr": [
-						"disk_used{path=\"/\"} / 1e9",
-						"disk_free{path=\"/\"} / 1e9",
-						"disk_total{path=\"/\"} / 1e9"
+						"disk_used{path=\"/hostfs\"} / 1e9",
+						"disk_free{path=\"/hostfs\"} / 1e9",
+						"disk_total{path=\"/hostfs\"} / 1e9"
 					],
 					"alias": [
 						"Used",
