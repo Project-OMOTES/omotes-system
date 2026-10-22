@@ -184,7 +184,10 @@ services:
       "
 
   omotes-prefect-server:
-    image: prefecthq/prefect:3.7.3-python3.11
+    image: omotes-prefect:3.9.0-ca-fixed
+    build:
+      context: .
+      dockerfile: prefect/Dockerfile
     command: prefect server start
     networks:
       - omotes
@@ -192,7 +195,6 @@ services:
       PREFECT_API_DATABASE_CONNECTION_URL: postgresql+asyncpg://${POSTGRES_PREFECT_USER_NAME}:${POSTGRES_PREFECT_USER_PASSWORD}@omotes_postgres:${POSTGRES_PORT}/prefect_server
       PREFECT_SERVER_API_HOST: 0.0.0.0
       PREFECT_UI_API_URL: "/api"
-      EXTRA_PIP_PACKAGES: prefect-docker
       PREFECT_SERVER_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
     depends_on:
       omotes_postgres:
@@ -212,7 +214,7 @@ services:
       retries: 30
 
   omotes-prefect-worker:
-    image: prefecthq/prefect:3.7.3-python3.11
+    image: omotes-prefect:3.9.0-ca-fixed
     command: >
       sh -c 'prefect worker start --pool docker-worker --type docker'
     volumes:
@@ -222,7 +224,6 @@ services:
     environment:
       PREFECT_API_URL: http://omotes-prefect-server:4200/api
       PREFECT_LOGGING_SERVER_LEVEL: WARNING
-      EXTRA_PIP_PACKAGES: prefect-docker
       PREFECT_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
     depends_on:
       omotes-prefect-server:

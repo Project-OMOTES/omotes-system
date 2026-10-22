@@ -22,12 +22,12 @@
             }
         },
         {
-            "name": "test__simulator__kpis_present_in_output",
+            "name": "test__simulator__happy_path",
             "type": "debugpy",
             "request": "launch",
             "module": "pytest",
             "args": [
-                "test_workflows_steps.py::TestWorkflows::test__simulator__kpis_present_in_output",
+                "test_workflows_steps.py::TestWorkflows::test__simulator__happy_path",
                 "-v",
                 "-s"
             ],

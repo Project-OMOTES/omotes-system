@@ -28,6 +28,13 @@ typecheck:
 test:
     ./scripts/test-system.sh
 
+# Publish the custom Caddy image (requires a ghcr.io login with package write access)
+publish-caddy version:
+    docker build --provenance=false --sbom=false -f caddy/Dockerfile -t ghcr.io/project-omotes/caddy-with-geoip:{{version}} -t ghcr.io/project-omotes/caddy-with-geoip:latest .
+    printf 'https://example.test {\n respond "ok"\n}\n' | docker run --rm -i --entrypoint caddy ghcr.io/project-omotes/caddy-with-geoip:{{version}} validate --config /dev/stdin --adapter caddyfile
+    docker push ghcr.io/project-omotes/caddy-with-geoip:{{version}}
+    docker push ghcr.io/project-omotes/caddy-with-geoip:latest
+
 # Run the system tests against an already-running stack
 test-local:
     cd system_tests/src && ../.venv/bin/python -m pytest test_workflows_steps.py -v -s
