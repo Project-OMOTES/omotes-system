@@ -1,0 +1,43 @@
+{
+	"title": "Network",
+	"rows": [
+		{
+			"title": "Prefect jobs",
+			"panels": [
+				{
+					"title": "Prefect job network throughput",
+					"description": "Bytes received and sent per second by running Prefect flow-run containers, broken down by network interface.",
+					"width": 12,
+					"unit": "MB/s",
+					"expr": [
+						"rate(docker_container_net_rx_bytes{io_prefect_flow_run_id!=\"\",container_status=\"running\"}[1m]) / 1e6",
+						"rate(docker_container_net_tx_bytes{io_prefect_flow_run_id!=\"\",container_status=\"running\"}[1m]) / 1e6"
+					],
+					"alias": [
+						"{{io_prefect_flow_run_name}} | {{io_prefect_deployment_name}} | {{io_prefect_flow_run_id}} RX {{network}}",
+						"{{io_prefect_flow_run_name}} | {{io_prefect_deployment_name}} | {{io_prefect_flow_run_id}} TX {{network}}"
+					]
+				}
+			]
+		},
+		{
+			"title": "All containers",
+			"panels": [
+				{
+					"title": "All container network throughput",
+					"description": "Bytes received and sent per second by running containers, broken down by network interface.",
+					"width": 12,
+					"unit": "MB/s",
+					"expr": [
+						"rate(docker_container_net_rx_bytes{container_status=\"running\"}[1m]) / 1e6",
+						"rate(docker_container_net_tx_bytes{container_status=\"running\"}[1m]) / 1e6"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}} RX {{network}}",
+						"{{container_name}} | {{io_prefect_flow_run_id}} TX {{network}}"
+					]
+				}
+			]
+		}
+	]
+}

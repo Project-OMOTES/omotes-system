@@ -1,0 +1,29 @@
+networks:
+  external-net:
+    name: ${EXTERNAL_NETWORK:?network name required, pass -n <NETWORK_NAME>}
+    external: true
+
+services:
+  victoria-metrics:
+    networks:
+      - external-net
+
+  omotes_influxdb:
+    networks:
+      - external-net
+
+  omotes_postgres:
+    networks:
+      - external-net
+
+  omotes-minio:
+    networks:
+      - external-net
+
+  omotes-prefect-server:
+    networks:
+      - external-net
+
+  omotes-orchestrator:
+    networks:
+      - external-net

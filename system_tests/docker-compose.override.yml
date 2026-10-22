@@ -1,39 +1,59 @@
 services:
   system_tests:
-    build: system_tests/ # This is referenced from root of repo due to how docker-compose works.
+    build:
+      context: . # This is referenced from root of repo due to how docker-compose works.
+      dockerfile: system_tests/Dockerfile
     networks:
       - omotes
     volumes:
       - ./system_tests_artifacts:/app/test_esdl/artifacts
     depends_on:
-      rabbitmq:
+      omotes-orchestrator:
+        condition: service_healthy
+      omotes-deploy-optimizer:
+        condition: service_completed_successfully
+      omotes_postgres:
         condition: service_healthy
       omotes_influxdb:
         condition: service_healthy
-      orchestrator:
-        condition: service_started
     environment:
-      RABBITMQ_USERNAME: omotes
-      RABBITMQ_PASSWORD: somepass1
-      RABBITMQ_VIRTUALHOST: omotes
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-
-      POSTGRES_HOST: orchestrator_postgres_db
-      POSTGRES_PORT: 5432
-      POSTGRES_ORCHESTRATOR_USER_NAME: omotes_orchestrator
-      POSTGRES_ORCHESTRATOR_USER_PASSWORD: somepass3
-
+      ORCHESTRATOR_HOST: omotes-orchestrator
+      ORCHESTRATOR_PORT: 9200
       INFLUXDB_HOST: omotes_influxdb
-      INFLUXDB_ADMIN_USER: root
-      INFLUXDB_ADMIN_PASSWORD: 9012
+      INFLUXDB_PORT: 8096
+      OPTIMIZER_FLOW_MAX_CONCURRENT_RUNS: ${OPTIMIZER_FLOW_MAX_CONCURRENT_RUNS}
 
-  orchestrator:
+  omotes_influxdb:
+    ports: !override
+      - "8196:${INFLUXDB_PORT:-8096}" # exposed (non-default port) so tests can be run/debugged from the host
+
+  omotes_postgres:
+    ports: !reset []
+
+  omotes-minio:
+    ports: !reset []
+
+  omotes-prefect-server:
+    ports: !reset []
+
+  omotes-orchestrator:
+    ports: !override
+      - "9210:9200" # exposed (non-default port) so tests can be run/debugged from the host
+
+  omotes-deploy-optimizer:
     environment:
-      TIMEOUT_JOB_MANAGER_START_BUFFER_SEC: 2
-      TIMEOUT_JOB_HANDLER_RERUN_SEC: 5
-      JOB_RETENTION_SEC: 20
+      # Ephemeral flow-run containers must join the renamed network below, not the
+      # literal "omotes" network default (which would belong to a different stack).
+      PREFECT_DOCKER_WORKER_NETWORKS: omotes-system-tests
 
-  orchestrator_postgres_db:
-    ports:
-      - "${POSTGRES_DEV_PORT}:5432"
+  omotes-deploy-simulator:
+    environment:
+      # Ephemeral flow-run containers must join the renamed network below, not the
+      # literal "omotes" network default (which would belong to a different stack).
+      PREFECT_DOCKER_WORKER_NETWORKS: omotes-system-tests
+
+networks:
+  # The base compose file pins this network to the fixed name "omotes", which would
+  # otherwise be shared with (and collide against) an already-running local dev stack.
+  omotes:
+    name: omotes-system-tests

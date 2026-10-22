@@ -1,75 +1,72 @@
 [
   {
     "workflow_type_name": "workflow_1",
-    "workflow_type_description_name": "Example workflow without parameters (except the ESDL)."
+    "workflow_type_description_name": "Example workflow without parameters (except the ESDL).",
+    "prefect_flow_name": "prefect-flow-name",
+    "memory_limit": "8Gi"
   },
   {
     "workflow_type_name": "workflow_2",
     "workflow_type_description_name": "Example workflow with parameters.",
-    "workflow_parameters": [
-      {
-        "parameter_type": "string",
-        "key_name": "string_example",
-        "title": "Optional, will override the 'capitalized, underscore to space', key_name",
-        "description": "Optional description/explanation.",
+    "prefect_flow_name": "prefect-flow-name",
+    "memory_limit": "8Gi",
+    "workflow_parameters": {
+      "string_simple": {
+        "type": "string",
+        "title": "Optional, will override the 'capitalized, underscore to space', key_name: Key Name",
+        "description": "Optional description/explanation (will be displayed below the input field).",
+        "default": "Optional default value"
+      },
+      "string_fixed_options": {
+        "type": "string",
+        "title": "Optional, will override the 'capitalized, underscore to space', key_name: Key Name",
+        "description": "Optional description/explanation (will be displayed below the input field).",
         "default": "Optional default value",
-        "enum_options": [
+        "oneOf": [
           {
-            "key_name": "key1",
-            "display_name": "Display name 1"
+            "const": "key1 (value that will be passed to the workflow if selected)",
+            "title": "Display name 1 (displayed in the dropdown list)"
           },
           {
-            "key_name": "key2",
-            "display_name": "Display name 2"
+            "const": "key2",
+            "title": "Display name 2"
           }
         ]
       },
-      {
-        "parameter_type": "boolean",
-        "key_name": "boolean_example",
+      "boolean_example": {
+        "type": "boolean",
         "title": "Optional, will override the 'capitalized, underscore to space', key_name",
         "description": "Optional description/explanation.",
         "default": true
       },
-      {
-        "parameter_type": "integer",
-        "key_name": "integer_example",
+      "integer_example": {
+        "type": "integer",
         "title": "This will override the 'capitalized, underscore to space', key_name",
         "description": "Description/explanation.",
         "default": 1,
         "minimum": 0,
         "maximum": 10
       },
-      {
-        "parameter_type": "float",
-        "key_name": "float_example",
+      "number_example": {
+        "type": "number",
         "title": "This will override the 'capitalized, underscore to space', key_name",
         "description": "Description/explanation.",
         "default": 1.5,
         "minimum": 0.0,
         "maximum": 9.5
       },
-      {
-        "parameter_type": "float",
-        "key_name": "float_example_basic"
+      "number_example_basic": {
+        "type": "number"
       },
-      {
-        "parameter_type": "datetime",
-        "key_name": "datetime_example"
+      "datetime_example": {
+        "type": "string",
+        "format": "date-time"
       },
-      {
-        "parameter_type": "datetime",
-        "key_name": "datetime_example_with_default",
+      "datetime_example_with_default": {
+        "type": "string",
+        "format": "date-time",
         "default": "2023-12-31T20:00:00"
-      },
-      {
-        "parameter_type": "duration",
-        "key_name": "duration_example_with_default",
-        "description": "The default is in seconds.",
-        "default": 900.0,
-        "minimum": 0.0,
-        "maximum": 1500.0
       }
-    ]
+    }
   }
 ]

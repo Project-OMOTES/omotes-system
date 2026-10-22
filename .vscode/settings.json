@@ -1,0 +1,47 @@
+{
+  "flake8.enabled": false,
+  "editor.renderValidationDecorations": "on",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "always",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "ruff.lint.enable": true,
+  "ruff.nativeServer": "on",
+  "python.analysis.typeCheckingMode": "basic",
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./tests",
+    "-p",
+    "test_*.py"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+  "isort.args": [
+    "--profile",
+    "black"
+  ],
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}/src"
+  },
+  "python.languageServer": "None", // disable Pylance (ruff/ty is used)
+  "ty.diagnosticMode": "workspace",
+  "ty.importStrategy": "fromEnvironment",
+  "ty.interpreter": "${workspaceFolder}/.venv/bin/python",
+  "ty.path": [
+    "${workspaceFolder}/.venv/bin/ty"
+  ],
+  "ruff.organizeImports": true,
+  "[just]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  "files.associations": {
+    "justfile": "just",
+    "*.just": "just"
+  }
+}

@@ -1,6 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-. scripts/_select_docker_compose.sh
+source "$(dirname "$0")/_parse_start_args.sh"
+parse_args "$@"
+if [[ -n "$VERSION" ]]; then
+  echo "-v is not supported by this script" >&2
+  exit 1
+fi
 
-$DOCKER_COMPOSE --profile=manual_dev down orchestrator_postgres_db_dev
-$DOCKER_COMPOSE up --wait
+docker compose "${COMPOSE_FILES[@]}" up "${BUILD_ARG[@]}" --wait

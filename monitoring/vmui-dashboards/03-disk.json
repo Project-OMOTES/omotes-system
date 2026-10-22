@@ -1,0 +1,60 @@
+{
+	"title": "Disk",
+	"rows": [
+		{
+			"title": "Docker VM root filesystem",
+			"panels": [
+				{
+					"title": "Docker VM root filesystem capacity",
+					"description": "Used, free, and total space reported for the Linux VM root filesystem. Docker container and volume storage shown below is included in this total, not additive to it.",
+					"width": 12,
+					"unit": "GB",
+					"expr": [
+						"disk_used{path=\"/hostfs\"} / 1e9",
+						"disk_free{path=\"/hostfs\"} / 1e9",
+						"disk_total{path=\"/hostfs\"} / 1e9"
+					],
+					"alias": [
+						"Used",
+						"Free",
+						"Total"
+					]
+				}
+			]
+		},
+		{
+			"title": "All containers",
+			"panels": [
+				{
+					"title": "All container writable layer usage",
+					"description": "Size of each container's writable layer, excluding read-only image layers.",
+					"width": 12,
+					"unit": "GB",
+					"expr": [
+						"docker_disk_usage_size_rw{container_name!=\"\"} / 1e9"
+					],
+					"alias": [
+						"{{container_name}} | {{io_prefect_flow_run_id}}"
+					]
+				}
+			]
+		},
+		{
+			"title": "Docker volumes",
+			"panels": [
+				{
+					"title": "Docker volume usage",
+					"description": "Storage size reported by Docker for each named volume.",
+					"width": 12,
+					"unit": "GB",
+					"expr": [
+						"docker_disk_usage_size{volume_name!=\"\"} / 1e9"
+					],
+					"alias": [
+						"{{volume_name}}"
+					]
+				}
+			]
+		}
+	]
+}
