@@ -1,4 +1,5 @@
 omotes-sdk-python==4.3.1
+certifi>=2026.10.19
 pytest ~= 8.1.2
 pytest-timeout
 xmltodict ~= 0.13.0
