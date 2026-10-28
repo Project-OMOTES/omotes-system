@@ -30,7 +30,7 @@ services:
   omotes_postgres:
     ports: !reset []
 
-  omotes-minio:
+  omotes-seaweedfs:
     ports: !reset []
 
   omotes-prefect-server:

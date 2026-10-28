@@ -16,7 +16,7 @@ services:
     networks:
       - external-net
 
-  omotes-minio:
+  omotes-seaweedfs:
     networks:
       - external-net
 

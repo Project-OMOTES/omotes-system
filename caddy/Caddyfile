@@ -57,14 +57,14 @@
   reverse_proxy omotes-prefect-server:4200
 }
 
-{$PROTOCOL}://{$MINIO_DOMAIN} {
+{$PROTOCOL}://{$SEAWEEDFS_DOMAIN} {
   import whitelist
-  reverse_proxy omotes-minio:9001
+  reverse_proxy omotes-seaweedfs:23646
 }
 
-{$PROTOCOL}://{$MINIO_API_DOMAIN} {
+{$PROTOCOL}://{$SEAWEEDFS_API_DOMAIN} {
   import whitelist
-  reverse_proxy omotes-minio:9000
+  reverse_proxy omotes-seaweedfs:8333
 }
 
 {$PROTOCOL}://{$METRICS_DOMAIN} {

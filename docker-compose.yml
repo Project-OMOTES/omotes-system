@@ -4,7 +4,7 @@ networks:
     name: omotes
 
 volumes:
-  minio_data:
+  seaweedfs_data:
   postgres_data:
   influxdb_data:
   victoria_metrics_data:
@@ -13,10 +13,11 @@ x-orchestrator-environment: &orchestrator-environment
   LOG_LEVEL: INFO
   PREFECT_API_URL: http://omotes-prefect-server:4200/api
   PREFECT_API_AUTH_STRING: "${PREFECT_USER_NAME}:${PREFECT_PASSWORD}"
-  MINIO_HOST: omotes-minio
-  MINIO_PORT: 9000
-  MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-  MINIO_SECRET: ${MINIO_SECRET}
+  S3_HOST: omotes-seaweedfs
+  S3_PORT: 8333
+  S3_FILER_PORT: ${S3_FILER_PORT:-8888}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+  S3_SECRET_KEY: ${S3_SECRET_KEY}
   INFLUX_HOST: omotes_influxdb
   INFLUX_PORT: ${INFLUXDB_PORT}
   INFLUX_USERNAME: ${INFLUXDB_ADMIN_USER}
@@ -141,47 +142,30 @@ services:
       timeout: 5s
       retries: 30
 
-  omotes-minio:
-    image: minio/minio:RELEASE.2025-06-13T11-33-47Z
+  omotes-seaweedfs:
+    image: chrislusf/seaweedfs:4.48
     ports:
-      - "9000:9000"   # API
-      - "9001:9001"   # Web UI
+      - "${SEAWEEDFS_S3_PORT}:8333"   # S3 API
+      - "${SEAWEEDFS_ADMIN_PORT}:23646" # Admin UI
     volumes:
-      - minio_data:/data
+      - seaweedfs_data:/data
     networks:
       - omotes
     environment:
-      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${MINIO_SECRET}
-    command: server /data --console-address ":9001"
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: prefect-results
+    command:
+      - mini
+      - -dir=/data
+      - -admin.user=${SEAWEEDFS_ADMIN_USER:-admin}
+      - -admin.password=${SEAWEEDFS_ADMIN_PASSWORD:?Set SEAWEEDFS_ADMIN_PASSWORD}
+      - -s3.externalUrl=${S3_EXTERNAL_URL:?Set S3_EXTERNAL_URL}
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8333/healthz"]
       interval: 10s
       timeout: 5s
       retries: 30
-
-  omotes-minio-create-buckets:
-    image: minio/mc:RELEASE.2025-05-21T01-59-54Z.hotfix.e98f1ead
-    depends_on:
-      omotes-minio:
-        condition: service_healthy
-    networks:
-      - omotes
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${MINIO_SECRET}
-      MINIO_BUCKETS: prefect-results
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set myminio http://omotes-minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET};
-      OLD_IFS=$$IFS;
-      IFS=',';
-      for bucket in $$MINIO_BUCKETS; do
-        IFS=$$OLD_IFS;
-        mc mb --ignore-existing myminio/$$bucket;
-      done;
-      exit 0;
-      "
 
   omotes-prefect-server:
     image: omotes-prefect:3.9.0-ca-fixed
@@ -199,7 +183,7 @@ services:
     depends_on:
       omotes_postgres:
         condition: service_healthy
-      omotes-minio:
+      omotes-seaweedfs:
         condition: service_healthy
     ports:
       - "4200:4200"
@@ -215,6 +199,9 @@ services:
 
   omotes-prefect-worker:
     image: omotes-prefect:3.9.0-ca-fixed
+    build:
+      context: .
+      dockerfile: prefect/Dockerfile
     command: >
       sh -c 'prefect worker start --pool docker-worker --type docker'
     volumes:
@@ -231,7 +218,7 @@ services:
     restart: unless-stopped
 
   omotes-orchestrator-migrate:
-    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.2
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.2.0
     command: ["alembic", "upgrade", "head"]
     environment: *orchestrator-environment
     networks:
@@ -242,7 +229,7 @@ services:
     restart: "no"
 
   omotes-orchestrator:
-    image: ghcr.io/project-omotes/omotes_orchestrator:2.1.2
+    image: ghcr.io/project-omotes/omotes_orchestrator:2.2.0
     environment: *orchestrator-environment
     volumes:
       - ${WORKFLOW_SETTINGS_FILE:?}:/app/config/workflow_config.json
@@ -251,6 +238,8 @@ services:
     depends_on:
       omotes-orchestrator-migrate:
         condition: service_completed_successfully
+      omotes-seaweedfs:
+        condition: service_healthy
     ports:
       - "9200:9200"
     healthcheck:
@@ -282,11 +271,11 @@ services:
       DB_USERNAME: ${POSTGRES_TIMESERIES_RW_USER_NAME}
       DB_PASSWORD: ${POSTGRES_TIMESERIES_RW_USER_PASSWORD}
       PG_DB_TIMESERIES: omotes_timeseries
-      MINIO_HOST: omotes-minio
-      MINIO_PORT: 9000
-      MINIO_EXTERNAL_URL: ${MINIO_EXTERNAL_URL}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET: ${MINIO_SECRET}
+      S3_HOST: omotes-seaweedfs
+      S3_PORT: 8333
+      S3_EXTERNAL_URL: ${S3_EXTERNAL_URL}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
       PREFECT_DOCKER_WORKER_NETWORKS: ${PREFECT_DOCKER_WORKER_NETWORKS:-omotes}
     networks:
       - omotes
@@ -314,11 +303,11 @@ services:
       INFLUXDB_PORT: ${INFLUXDB_PORT}
       INFLUXDB_USERNAME: ${INFLUXDB_ADMIN_USER}
       INFLUXDB_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
-      MINIO_HOST: omotes-minio
-      MINIO_PORT: 9000
-      MINIO_EXTERNAL_URL: ${MINIO_EXTERNAL_URL}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET: ${MINIO_SECRET}
+      S3_HOST: omotes-seaweedfs
+      S3_PORT: 8333
+      S3_EXTERNAL_URL: ${S3_EXTERNAL_URL}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
       PREFECT_DOCKER_WORKER_NETWORKS: ${PREFECT_DOCKER_WORKER_NETWORKS:-omotes}
     networks:
       - omotes

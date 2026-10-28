@@ -30,9 +30,19 @@ The most relevant env vars for optimzer/simulator control:
 - `SIMULATOR_PREFECT_FLOW_TIMEOUT_SECONDS`: maximum duration of a simulator run
 - `PREFECT_DOCKER_WORKER_NETWORKS`: comma-separated Docker network names for flow-run containers (default: `omotes`),
   for example `omotes,shared-network`
-- `MINIO_EXTERNAL_URL`: the minio api external url used for the presigned url used in the prefect UI. For instance
-  `https://minio-api.test.nwn-design-toolkit.nl/` which points to the minio `9000` port (`9001` is for the UI). It must
-  include `http(s)`.
+
+Object storage env vars. The applications only use generic, S3-compatible settings; SeaweedFS is the S3 provider
+configured in [docker-compose.yml](docker-compose.yml):
+
+- `S3_EXTERNAL_URL`: the browser-accessible S3 API URL used to sign download links in the Prefect UI. For local
+  deployments use `http://localhost:8233`; behind a proxy, use its HTTPS S3 API domain (`SEAWEEDFS_API_DOMAIN`, which
+  proxies to the container's S3 API port `8333`, not the admin UI).
+- `S3_ACCESS_KEY`, `S3_SECRET_KEY`: S3 credentials, used to create the SeaweedFS S3 identity and by the applications.
+- `SEAWEEDFS_S3_PORT`, `SEAWEEDFS_ADMIN_PORT`: host-published ports for the S3 API and admin UI (template values
+  `8233` and `22646`). The ports inside the container remain `8333` and `23646`. If changing `SEAWEEDFS_S3_PORT`, update
+  `S3_EXTERNAL_URL` to use the selected host port.
+- `SEAWEEDFS_ADMIN_USER` (default `admin`), `SEAWEEDFS_ADMIN_PASSWORD`: login for the SeaweedFS admin UI, separate
+  from the S3 credentials.
 
 Each workflow in the `WORKFLOW_SETTINGS_FILE` contains `workflow_type_name`,`workflow_type_description_name` and
 `prefect_flow_name`. Optional are `workflow_parameters` and `memory_limit` which is for example: `512Mi`, `2Gi`, `750M`
@@ -57,6 +67,24 @@ queue, `omotes-optimizer` and `omotes-optimizer-gurobi`, limited by `OPTIMIZER_F
 `OPTIMIZER_GUROBI_MAX_CONCURRENT_RUNS` over all deployed versions. Runs above the limit wait in the queue (state
 `Scheduled`/`Late`) without starting a container. The limits are visible in the Prefect UI under **Work Pools** >
 `docker-worker` > **Work Queues**, but are reset to the `.env` values on each optimizer deployment.
+
+### Migrating from MinIO to SeaweedFS
+
+MinIO has been replaced by SeaweedFS as S3-compatible object store. Existing MinIO objects are **not** migrated: old
+job inputs and result links are no longer readable after the switch. To migrate a deployment:
+
+1. Stop the old stack.
+2. In `.env`, replace `MINIO_EXTERNAL_URL`, `MINIO_ACCESS_KEY` and `MINIO_SECRET` with `S3_EXTERNAL_URL`,
+   `S3_ACCESS_KEY` and `S3_SECRET_KEY`, and add `SEAWEEDFS_ADMIN_USER` and `SEAWEEDFS_ADMIN_PASSWORD`.
+3. In the proxy environment, replace `MINIO_DOMAIN`/`MINIO_API_DOMAIN` with `SEAWEEDFS_DOMAIN`/`SEAWEEDFS_API_DOMAIN`.
+4. In the optimizer-worker and simulator-worker CI, add the repository variable `S3_EXTERNAL_URL` and the repository
+   secrets `S3_ACCESS_KEY` and `S3_SECRET_KEY` (matching this stack's `.env`).
+5. Use orchestrator, optimizer and simulator versions built on the S3-compatible SDK, start the stack and redeploy
+   both Prefect flows, so new runs use the `S3_*` configuration and the `input_esdl_s3_path` flow parameter.
+6. After confirming the old data is no longer needed, remove the old `minio_data` Docker volume manually.
+
+The new `seaweedfs_data` volume starts empty and the `prefect-results` bucket is created automatically. The orchestrator
+database migration retires old MinIO cleanup records without deleting job metadata.
 
 ### Start
 
@@ -92,8 +120,8 @@ And to stop the omotes-system:
 
 ### Usage
 
-After startup the prefect UI ([http://localhost:4200/](http://localhost:4200/)), minio UI
-([http://localhost:9001/](http://localhost:9001/)) and the orchestrator api
+After startup the prefect UI ([http://localhost:4200/](http://localhost:4200/)), SeaweedFS admin UI
+([http://localhost:22646/](http://localhost:22646/)) and the orchestrator api
 ([http://localhost:9200/docs](http://localhost:9200/docs)) are available.\
 Start a run by
 [http://localhost:9200/docs#/job/create_job_job\_\_post](http://localhost:9200/docs#/job/create_job_job__post) with
