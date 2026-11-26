@@ -57,12 +57,12 @@
   reverse_proxy omotes-prefect-server:4200
 }
 
-{$PROTOCOL}://{$SEAWEEDFS_DOMAIN} {
+{$PROTOCOL}://{$S3_UI_DOMAIN} {
   import whitelist
   reverse_proxy omotes-seaweedfs:23646
 }
 
-{$PROTOCOL}://{$SEAWEEDFS_API_DOMAIN} {
+{$PROTOCOL}://{$S3_API_DOMAIN} {
   import whitelist
   reverse_proxy omotes-seaweedfs:8333
 }
